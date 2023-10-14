@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private CustomInput input = null;
+    private PlayerInput input = null;
     private Rigidbody2D rb = null;
 
     private Vector2 moveVector = Vector2.zero;
@@ -16,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        input = new CustomInput();   
+        input = new PlayerInput();   
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -24,14 +22,14 @@ public class PlayerMovement : MonoBehaviour
     {
         input.Enable();
         input.Player.Movement.performed += OnMovementPerformed;
-        input.Player.Movement.canceled += OnMovementPerformed;
+        input.Player.Movement.canceled += OnMovementCancelled;
     }
 
     private void OnDisable()
     {
         input.Disable();
         input.Player.Movement.performed -= OnMovementPerformed;
-        input.Player.Movement.canceled -= OnMovementPerformed;
+        input.Player.Movement.canceled -= OnMovementCancelled;
     }
 
     private void OnMovementPerformed(InputAction.CallbackContext value)
