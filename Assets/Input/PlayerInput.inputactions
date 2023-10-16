@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInput",
+    "name": "CustomInput",
     "maps": [
         {
             "name": "Player",
@@ -10,6 +10,24 @@
                     "type": "Value",
                     "id": "d9d2e172-409f-4449-833e-325a7c70efe7",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "3966d4b9-558f-4f8e-977a-a55fe70b7582",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ADS",
+                    "type": "Button",
+                    "id": "09b00792-75d2-42f1-8768-3c51fbaf0059",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -74,7 +92,7 @@
                 {
                     "name": "ControllerLeftAnalog",
                     "id": "c7ffa903-7534-4fc3-a2fe-b35934008e2a",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -125,6 +143,50 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ff441b39-1767-40e2-87aa-4c9368ee07cb",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5d403e70-53e3-4d3b-9f9e-6c8adf7dfc79",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a16f706-bb6a-4e61-8804-efc839b95cd6",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ADS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5b244c6-4dd3-46c7-891d-17722d03458f",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ADS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
