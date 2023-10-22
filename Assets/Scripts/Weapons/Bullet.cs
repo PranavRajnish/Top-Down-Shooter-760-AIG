@@ -3,31 +3,35 @@ using UnityEngine;
 
 namespace Weapons
 {
+    [RequireComponent(typeof(BoxCollider2D))]
     public class Bullet : MonoBehaviour
     {
         public float Damage => _damage;
         [SerializeField] private float bulletSpeed = 5f;
 
-        private Vector2 _currentDirection = Vector2.one;
+        private Transform _muzzle;
+        private Vector2 _currentDirection;
         private float _damage = 10;
 
         public Bullet Init(Gun parentGun)
         {
             _damage = parentGun.BulletDamage;
-
+            _muzzle = parentGun.Muzzle;
+            
             return this;
         }
 
-        public void OnBulletFired(Vector2 startingPos, Vector2 direction)
+        public void OnBulletFired()
         {
-            transform.position = startingPos;
-            _currentDirection = direction;
+            transform.position = _muzzle.position;
+            _currentDirection = _muzzle.up;
 
             gameObject.SetActive(true);
         }
 
         private void Update()
         {
+            Debug.Log(_currentDirection);
             transform.position += (Vector3)_currentDirection * (Time.deltaTime * bulletSpeed);
         }
 

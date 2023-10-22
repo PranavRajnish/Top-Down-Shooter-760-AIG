@@ -16,7 +16,7 @@ namespace Weapons
             {
                 FireBullet();
                 
-                yield return 1 / fireRate;
+                yield return new WaitForSeconds(1/fireRate);
             }
         }
     }

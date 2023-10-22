@@ -14,22 +14,26 @@ namespace Weapons
         public abstract FireMode[] FireModes { get; }
 
         public float BulletDamage => bulletDamage;
+        public Transform Muzzle => muzzle;
 
         [SerializeField] private Bullet bulletPrefab;
         [SerializeField] private Transform muzzle;
+        [SerializeField] private int magSize;
+        [SerializeField] private float reloadTime;
         [SerializeField] private float bulletDamage;
 
+        private int _bulletsRemaining;
         private List<Bullet> _poolOfBullets;
         private Coroutine _shootingCoroutine;
-
-        private const float NumberOfBullets = 20f;
 
         protected void Start()
         {
             _poolOfBullets = new List<Bullet>();
+            _bulletsRemaining = magSize;
+            bulletPrefab.gameObject.SetActive(false);
         }
 
-        private void OnTriggerPulled()
+        public void OnTriggerPulled()
         {
             if (_shootingCoroutine != null)
                 StopCoroutine(_shootingCoroutine);
@@ -41,22 +45,38 @@ namespace Weapons
 
         protected void FireBullet()
         {
-            if (_poolOfBullets.Count <= NumberOfBullets && _poolOfBullets.All(bullet => bullet.gameObject.activeSelf))
+            if (_bulletsRemaining <= 0)
+                return;
+            
+            if (_poolOfBullets.Count <= magSize && _poolOfBullets.All(bullet => bullet.gameObject.activeSelf))
             {
                 _poolOfBullets.Add(Instantiate(bulletPrefab, muzzle.position, quaternion.identity).Init(this));
             }
 
             foreach (var bullet in _poolOfBullets.Where(bullet => !bullet.gameObject.activeSelf))
             {
-                bullet.OnBulletFired(muzzle.position, new Vector2(1, 0));
+                _bulletsRemaining--;
+                bullet.OnBulletFired();
                 break;
             }
         }
 
-        private void OnTriggerReleased()
+        public void OnTriggerReleased()
         {
             if (_shootingCoroutine != null)
                 StopCoroutine(_shootingCoroutine);
+        }
+
+        public void OnReloadPressed()
+        {
+            StartCoroutine(Reload());
+        }
+
+        private IEnumerator Reload()
+        {
+            yield return new WaitForSeconds(reloadTime);
+
+            _bulletsRemaining = magSize;
         }
     }
 }

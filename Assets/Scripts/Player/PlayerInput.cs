@@ -48,6 +48,15 @@ namespace Player
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""a80490d0-c48f-4d46-b893-a7dc92a4083a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""ADS"",
                     ""type"": ""Button"",
                     ""id"": ""09b00792-75d2-42f1-8768-3c51fbaf0059"",
@@ -211,6 +220,28 @@ namespace Player
                     ""action"": ""ADS"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6508eae9-5bfc-4b23-881f-5d84c74ac817"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8876ba5a-c9b9-40fe-b8d7-fa34deb8b4bb"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -221,6 +252,7 @@ namespace Player
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
             m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+            m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
             m_Player_ADS = m_Player.FindAction("ADS", throwIfNotFound: true);
         }
 
@@ -285,6 +317,7 @@ namespace Player
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Movement;
         private readonly InputAction m_Player_Attack;
+        private readonly InputAction m_Player_Reload;
         private readonly InputAction m_Player_ADS;
         public struct PlayerActions
         {
@@ -292,6 +325,7 @@ namespace Player
             public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
             public InputAction @Movement => m_Wrapper.m_Player_Movement;
             public InputAction @Attack => m_Wrapper.m_Player_Attack;
+            public InputAction @Reload => m_Wrapper.m_Player_Reload;
             public InputAction @ADS => m_Wrapper.m_Player_ADS;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
@@ -308,6 +342,9 @@ namespace Player
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
                 @ADS.started += instance.OnADS;
                 @ADS.performed += instance.OnADS;
                 @ADS.canceled += instance.OnADS;
@@ -321,6 +358,9 @@ namespace Player
                 @Attack.started -= instance.OnAttack;
                 @Attack.performed -= instance.OnAttack;
                 @Attack.canceled -= instance.OnAttack;
+                @Reload.started -= instance.OnReload;
+                @Reload.performed -= instance.OnReload;
+                @Reload.canceled -= instance.OnReload;
                 @ADS.started -= instance.OnADS;
                 @ADS.performed -= instance.OnADS;
                 @ADS.canceled -= instance.OnADS;
@@ -345,6 +385,7 @@ namespace Player
         {
             void OnMovement(InputAction.CallbackContext context);
             void OnAttack(InputAction.CallbackContext context);
+            void OnReload(InputAction.CallbackContext context);
             void OnADS(InputAction.CallbackContext context);
         }
     }
