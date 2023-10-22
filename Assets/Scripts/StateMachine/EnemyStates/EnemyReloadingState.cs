@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyReloadingState : EnemyBaseState
 {
-    public EnemyReloadingState(EnemyStateManager.EnemyState state) : base(state) { }
+    public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding) : base(state, pathfinding) { }
 
     public override void EnterState()
     {

@@ -4,8 +4,11 @@ using UnityEngine;
 
 public abstract class  EnemyBaseState : BaseState<EnemyStateManager.EnemyState>
 {
-   public EnemyBaseState(EnemyStateManager.EnemyState state) : base(state)
+    protected EnemyPathfinding pathfinding;
+   public EnemyBaseState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding) : base(state)
    {
-
+        this.pathfinding = pathfinding;
    }
+
+
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyShootingState : EnemyBaseState
 {
-    public EnemyShootingState(EnemyStateManager.EnemyState state) : base(state) { }
+    public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding) : base(state, pathfinding) { }
 
     public override void EnterState()
     {

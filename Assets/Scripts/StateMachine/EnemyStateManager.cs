@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
 {
+    [SerializeField]
+    private EnemyPathfinding pathfinding;
+    [SerializeField]
+    private PolygonCollider2D baseCollider;
     public enum EnemyState
     {
         Capturing,
@@ -15,10 +19,10 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     // Start is called before the first frame update
     private void Awake()
     {
-        currentState = new EnemyCapturingState(EnemyState.Capturing);
-        states.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle));
-        states.Add(EnemyState.Shooting, new EnemyIdleState(EnemyState.Shooting));
-        states.Add(EnemyState.Reloading, new EnemyIdleState(EnemyState.Reloading));
+        currentState = new EnemyCapturingState(EnemyState.Capturing, pathfinding, baseCollider);
+        states.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle, pathfinding));
+        states.Add(EnemyState.Shooting, new EnemyIdleState(EnemyState.Shooting, pathfinding));
+        states.Add(EnemyState.Reloading, new EnemyIdleState(EnemyState.Reloading, pathfinding));
     }
 
 }

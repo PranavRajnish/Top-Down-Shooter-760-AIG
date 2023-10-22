@@ -4,41 +4,41 @@ using UnityEngine;
 
 public class EnemyIdleState : EnemyBaseState
 {
-    public EnemyIdleState(EnemyStateManager.EnemyState state) : base(state) { }
+    public EnemyIdleState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding) : base(state, pathfinding) { }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Entering Idle State");
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
-        throw new System.NotImplementedException();
+        return stateKey;
     }
 
     public override void OnTriggerEnter(Collider2D other)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void OnTriggerExit(Collider2D other)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void OnTriggerStay(Collider2D other)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        
     }
 
     // Start is called before the first frame update
