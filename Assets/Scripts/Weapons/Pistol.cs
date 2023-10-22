@@ -1,18 +1,17 @@
+using System.Collections;
+
 namespace Weapons
 {
-    public class Pistol : Weapon
+    public class Pistol : Gun
     {
-        public override WeaponType Type => WeaponType.Knife;
+        public override GunType Type => GunType.Knife;
         public override FireMode[] FireModes => new[] { FireMode.Single };
-
-        public override void OnAttackStart()
+        
+        protected override IEnumerator Fire()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnAttackEnd()
-        {
-            throw new System.NotImplementedException();
+            FireBullet();
+            
+            yield break;
         }
     }
 }

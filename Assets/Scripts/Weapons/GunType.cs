@@ -1,6 +1,6 @@
 namespace Weapons
 {
-    public enum WeaponType
+    public enum GunType
     {
         Knife,
         Pistol,

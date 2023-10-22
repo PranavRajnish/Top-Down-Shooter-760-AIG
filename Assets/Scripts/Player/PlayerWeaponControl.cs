@@ -4,10 +4,10 @@ using Weapons;
 
 namespace Player
 {
-    public class PlayerWeaponControl : MonoBehaviour
+    public class PlayerWeaponControl : PlayerComponent
     {
         private PlayerInput _input;
-        private Weapon _currentWeapon;
+        private Gun _currentGun;
     
         private void Awake()
         {
