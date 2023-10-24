@@ -8,6 +8,8 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     private EnemyPathfinding pathfinding;
     [SerializeField]
     private PolygonCollider2D baseCollider;
+    [SerializeField]
+    EnemyPerception enemyPerception;
     public enum EnemyState
     {
         Capturing,
@@ -19,10 +21,10 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     // Start is called before the first frame update
     private void Awake()
     {
-        currentState = new EnemyCapturingState(EnemyState.Capturing, pathfinding, baseCollider);
-        states.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle, pathfinding));
-        states.Add(EnemyState.Shooting, new EnemyIdleState(EnemyState.Shooting, pathfinding));
-        states.Add(EnemyState.Reloading, new EnemyIdleState(EnemyState.Reloading, pathfinding));
+        currentState = new EnemyCapturingState(EnemyState.Capturing, this, pathfinding, baseCollider);
+        states.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle, this, pathfinding));
+        states.Add(EnemyState.Shooting, new EnemyShootingState(EnemyState.Shooting, this, pathfinding));
+        states.Add(EnemyState.Reloading, new EnemyReloadingState(EnemyState.Reloading, this, pathfinding));
     }
 
 }

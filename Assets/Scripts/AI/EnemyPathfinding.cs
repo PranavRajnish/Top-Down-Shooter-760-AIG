@@ -108,7 +108,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (velocity.magnitude > 0)
         {
             float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-            EnemySprite.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
     }
 

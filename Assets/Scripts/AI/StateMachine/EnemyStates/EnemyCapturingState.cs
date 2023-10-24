@@ -7,18 +7,22 @@ public class EnemyCapturingState : EnemyBaseState
     PolygonCollider2D baseCollider;
     Vector2 currentTarget;
     bool bReachedEndOfPath = false;
-    public EnemyCapturingState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding, PolygonCollider2D baseCollider) : base(state, pathfinding)
+  
+    public EnemyCapturingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager, EnemyPathfinding pathfinding, PolygonCollider2D baseCollider) : base(state, enemyStateManager, pathfinding)
     { 
         this.baseCollider = baseCollider;
     }
 
     public override void EnterState()
     {
+        base.EnterState();
         Debug.Log("Entered Capturing State");
+
         EnemyPathfinding.ReachedEndOfPath += OnEndOfPathReached;
 
         if (baseCollider == null)
             return;
+
 
         Vector2 point = GetRandomPointInCollider(baseCollider);
         while (!(Physics2D.OverlapPoint(point, 1<<7) == baseCollider))
@@ -32,6 +36,8 @@ public class EnemyCapturingState : EnemyBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
+
         EnemyPathfinding.ReachedEndOfPath -= OnEndOfPathReached;
     }
 
@@ -77,5 +83,10 @@ public class EnemyCapturingState : EnemyBaseState
     {
         Debug.Log("End of Path reached");
         bReachedEndOfPath = true;
+    }
+
+    protected override void OnPlayerFound()
+    {
+
     }
 }

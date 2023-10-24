@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyIdleState : EnemyBaseState
 {
-    public EnemyIdleState(EnemyStateManager.EnemyState state, EnemyPathfinding pathfinding) : base(state, pathfinding) { }
+    public EnemyIdleState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager, EnemyPathfinding pathfinding) : base(state, enemyStateManager, pathfinding) { }
 
     public override void EnterState()
     {
