@@ -1,3 +1,4 @@
+using System;
 using Player;
 using UnityEngine;
 
@@ -13,12 +14,19 @@ namespace Weapons
         private Vector2 _currentDirection;
         private float _damage = 10;
 
+        private DateTime _startTime;
+
         public Bullet Init(Gun parentGun)
         {
             _damage = parentGun.BulletDamage;
             _muzzle = parentGun.Muzzle;
-            
+
             return this;
+        }
+
+        private void OnEnable()
+        {
+            _startTime = DateTime.Now;
         }
 
         public void OnBulletFired()
@@ -31,7 +39,9 @@ namespace Weapons
 
         private void Update()
         {
-            Debug.Log(_currentDirection);
+            if ((DateTime.Now - _startTime).Seconds > 2f)
+                gameObject.SetActive(false);
+
             transform.position += (Vector3)_currentDirection * (Time.deltaTime * bulletSpeed);
         }
 

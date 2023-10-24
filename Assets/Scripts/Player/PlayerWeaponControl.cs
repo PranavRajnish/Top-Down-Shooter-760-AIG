@@ -20,7 +20,7 @@ namespace Player
             _input.Player.Attack.performed += OnPlayerAttack;
             _input.Player.Attack.canceled += OnPlayerAttackEnd;
 
-            _input.Player.Reload.performed += OnPlayerAttack;
+            _input.Player.Reload.performed += OnPlayerReload;
             
             _input.Player.ADS.performed += OnPlayerADS;
             _input.Player.ADS.canceled += OnPlayerADSEnd;

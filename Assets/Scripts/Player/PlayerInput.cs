@@ -39,6 +39,15 @@ namespace Player
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Rotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""65660091-ae8c-45fd-851f-5727c112a708"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""Attack"",
                     ""type"": ""Button"",
                     ""id"": ""3966d4b9-558f-4f8e-977a-a55fe70b7582"",
@@ -242,6 +251,28 @@ namespace Player
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d62a12a-d876-4dfd-9fa1-9805a0072806"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aee4c849-c2dd-463b-9e52-6038307a627a"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -251,6 +282,7 @@ namespace Player
             // Player
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
+            m_Player_Rotation = m_Player.FindAction("Rotation", throwIfNotFound: true);
             m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
             m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
             m_Player_ADS = m_Player.FindAction("ADS", throwIfNotFound: true);
@@ -316,6 +348,7 @@ namespace Player
         private readonly InputActionMap m_Player;
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Movement;
+        private readonly InputAction m_Player_Rotation;
         private readonly InputAction m_Player_Attack;
         private readonly InputAction m_Player_Reload;
         private readonly InputAction m_Player_ADS;
@@ -324,6 +357,7 @@ namespace Player
             private @PlayerInput m_Wrapper;
             public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
             public InputAction @Movement => m_Wrapper.m_Player_Movement;
+            public InputAction @Rotation => m_Wrapper.m_Player_Rotation;
             public InputAction @Attack => m_Wrapper.m_Player_Attack;
             public InputAction @Reload => m_Wrapper.m_Player_Reload;
             public InputAction @ADS => m_Wrapper.m_Player_ADS;
@@ -339,6 +373,9 @@ namespace Player
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
+                @Rotation.started += instance.OnRotation;
+                @Rotation.performed += instance.OnRotation;
+                @Rotation.canceled += instance.OnRotation;
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
@@ -355,6 +392,9 @@ namespace Player
                 @Movement.started -= instance.OnMovement;
                 @Movement.performed -= instance.OnMovement;
                 @Movement.canceled -= instance.OnMovement;
+                @Rotation.started -= instance.OnRotation;
+                @Rotation.performed -= instance.OnRotation;
+                @Rotation.canceled -= instance.OnRotation;
                 @Attack.started -= instance.OnAttack;
                 @Attack.performed -= instance.OnAttack;
                 @Attack.canceled -= instance.OnAttack;
@@ -384,6 +424,7 @@ namespace Player
         public interface IPlayerActions
         {
             void OnMovement(InputAction.CallbackContext context);
+            void OnRotation(InputAction.CallbackContext context);
             void OnAttack(InputAction.CallbackContext context);
             void OnReload(InputAction.CallbackContext context);
             void OnADS(InputAction.CallbackContext context);

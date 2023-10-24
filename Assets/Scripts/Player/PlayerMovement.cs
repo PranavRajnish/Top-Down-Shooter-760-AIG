@@ -5,48 +5,64 @@ namespace Player
 {
     public class PlayerMovement : MonoBehaviour
     {
-        private PlayerInput input = null;
-        private Rigidbody2D rb = null;
+        [SerializeField] private float moveSpeed = 10f;
+        
+        private PlayerInput _input;
+        private Rigidbody2D _rb;
 
-        private Vector2 moveVector = Vector2.zero;
+        private Vector2 _moveVector = Vector2.zero;
+        private Vector3 _mousePosition = Vector3.zero;
 
-        [SerializeField]
-        private float moveSpeed = 10f;
-
+        private Camera _levelCam;
 
         private void Awake()
         {
-            input = new PlayerInput();   
-            rb = GetComponent<Rigidbody2D>();
+            _input = new PlayerInput();
+            _rb = GetComponent<Rigidbody2D>();
+            _levelCam = Camera.main;
+            _mousePosition = _levelCam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         }
 
         private void OnEnable()
         {
-            input.Enable();
-            input.Player.Movement.performed += OnMovementPerformed;
-            input.Player.Movement.canceled += OnMovementCancelled;
+            _input.Enable();
+            _input.Player.Movement.performed += OnMovementPerformed;
+            _input.Player.Movement.canceled += OnMovementCancelled;
+
+            _input.Player.Rotation.performed += OnMouseMoved;
         }
+
 
         private void OnDisable()
         {
-            input.Disable();
-            input.Player.Movement.performed -= OnMovementPerformed;
-            input.Player.Movement.canceled -= OnMovementCancelled;
+            _input.Disable();
+            _input.Player.Movement.performed -= OnMovementPerformed;
+            _input.Player.Movement.canceled -= OnMovementCancelled;
+
+            _input.Player.Rotation.performed -= OnMouseMoved;
         }
 
         private void OnMovementPerformed(InputAction.CallbackContext value)
         {
-            moveVector = value.ReadValue<Vector2>();
+            _moveVector = value.ReadValue<Vector2>();
         }
 
         private void OnMovementCancelled(InputAction.CallbackContext value)
         {
-            moveVector = Vector2.zero;
+            _moveVector = Vector2.zero;
         }
 
         private void FixedUpdate()
         {
-            rb.velocity = moveVector * moveSpeed;
+            _rb.velocity = _moveVector * moveSpeed;
+            
+            var direction = _mousePosition - transform.position;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg));
+        }
+
+        private void OnMouseMoved(InputAction.CallbackContext value)
+        {
+            _mousePosition = _levelCam.ScreenToWorldPoint(value.ReadValue<Vector2>());
         }
     }
 }

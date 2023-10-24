@@ -19,12 +19,13 @@ namespace Weapons
         [SerializeField] private Bullet bulletPrefab;
         [SerializeField] private Transform muzzle;
         [SerializeField] private int magSize;
-        [SerializeField] private float reloadTime;
+        [SerializeField] private float reloadTime = 10f;
         [SerializeField] private float bulletDamage;
 
         private int _bulletsRemaining;
         private List<Bullet> _poolOfBullets;
         private Coroutine _shootingCoroutine;
+        private Coroutine _reloadCoroutine;
 
         protected void Start()
         {
@@ -47,7 +48,7 @@ namespace Weapons
         {
             if (_bulletsRemaining <= 0)
                 return;
-            
+
             if (_poolOfBullets.Count <= magSize && _poolOfBullets.All(bullet => bullet.gameObject.activeSelf))
             {
                 _poolOfBullets.Add(Instantiate(bulletPrefab, muzzle.position, quaternion.identity).Init(this));
@@ -69,7 +70,8 @@ namespace Weapons
 
         public void OnReloadPressed()
         {
-            StartCoroutine(Reload());
+            if (_reloadCoroutine == null && _bulletsRemaining < magSize)
+                _reloadCoroutine = StartCoroutine(Reload());
         }
 
         private IEnumerator Reload()
@@ -77,6 +79,7 @@ namespace Weapons
             yield return new WaitForSeconds(reloadTime);
 
             _bulletsRemaining = magSize;
+            _reloadCoroutine = null;
         }
     }
 }
