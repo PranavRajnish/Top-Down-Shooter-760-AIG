@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyCapturingState : EnemyBaseState
 {
-    PolygonCollider2D baseCollider;
+    private PolygonCollider2D baseCollider;
     Vector2 currentTarget;
     bool bReachedEndOfPath = false;
   
