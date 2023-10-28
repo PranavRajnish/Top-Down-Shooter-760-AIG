@@ -915,7 +915,7 @@ GameObject:
   - component: {fileID: 807267109}
   - component: {fileID: 807267108}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: WaveText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1356,6 +1356,7 @@ MonoBehaviour:
   - {fileID: 2024331874}
   baseCollider: {fileID: 291157273}
   player: {fileID: 1831074496}
+  waveText: {fileID: 807267108}
   currentWave: 1
   enemiesToSpawn: 0
 --- !u!4 &1091510420
