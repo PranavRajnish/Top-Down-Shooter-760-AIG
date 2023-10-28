@@ -16,9 +16,9 @@ public class EnemyPerception : MonoBehaviour
     [SerializeField]
     private float sightDistance = 10f;
     [SerializeField]
-    private GameObject player;
-    [SerializeField]
     private LayerMask sightObstacles;
+
+    public GameObject player;
 
     bool bCanSeePlayer = false;
 
