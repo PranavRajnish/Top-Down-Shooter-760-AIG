@@ -4,7 +4,7 @@ public class EnemyFindPlayerState : EnemyBaseState
 {
     private PolygonCollider2D baseCollider => stateManager.BaseCollider;
     private Vector2 _currentTarget;
-
+    
     public EnemyFindPlayerState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
     {
     }
@@ -16,6 +16,7 @@ public class EnemyFindPlayerState : EnemyBaseState
 
         _currentTarget = Perception.player.transform.position;
         Pathfinding.CalculateNewPath(_currentTarget);
+        
     }
 
     public override void ExitState()
@@ -46,6 +47,10 @@ public class EnemyFindPlayerState : EnemyBaseState
     public override void UpdateState()
     {
         if (!Perception.player.transform.position.Equals(_currentTarget))
+        {
+            _currentTarget = Perception.player.transform.position;
             Pathfinding.CalculateNewPath(_currentTarget);
+        }
+            
     }
 }
