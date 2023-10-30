@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
@@ -41,4 +42,5 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     private void Awake()
     {
     }
+
 }

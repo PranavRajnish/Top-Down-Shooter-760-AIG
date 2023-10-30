@@ -12,10 +12,12 @@ public class EnemyReloadingState : EnemyBaseState
     {
         _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
         _currentGun.OnReloadPressed();
+
     }
 
     public override void ExitState()
     {
+
     }
 
     public override EnemyStateManager.EnemyState GetNextState()

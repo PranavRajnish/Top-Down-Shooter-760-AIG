@@ -80,7 +80,7 @@ public class EnemyPathfinding : MonoBehaviour
         bIsPathfinding = true;
         ReachedEndOfPath = false;
         //InvokeRepeating(nameof(UpdatePath), 0f, 0.5f);
-        Seeker.CancelCurrentPathRequest();
+        //Seeker.CancelCurrentPathRequest();
         UpdatePath();
     }
 
@@ -92,7 +92,10 @@ public class EnemyPathfinding : MonoBehaviour
 
     private void UpdatePath()
     {
-        Seeker.StartPath(transform.position, target, OnPathFound);
+        if (Seeker.IsDone())
+        {
+            Seeker.StartPath(transform.position, target, OnPathFound);
+        }
     }
 
     private void OnPathFound(Path p)

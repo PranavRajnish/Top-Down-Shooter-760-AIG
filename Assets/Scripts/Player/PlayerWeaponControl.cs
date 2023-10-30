@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Weapons;
@@ -8,6 +9,8 @@ namespace Player
     {
         private PlayerInput _input;
         [SerializeField] private Gun _currentGun;
+
+        [SerializeField] TextMeshProUGUI reloadText;
 
         private void Awake()
         {
@@ -64,6 +67,21 @@ namespace Player
         private void OnPlayerADS(InputAction.CallbackContext obj)
         {
             Debug.Log("ADS End");
+        }
+
+        private void Update()
+        {
+            if (_currentGun)
+            {
+                if(_currentGun.BulletsRemaining == 0)
+                {
+                    reloadText.SetText("Press 'R' To Reload");
+                }
+                else
+                {
+                    reloadText.SetText("");
+                }
+            }
         }
     }
 }
