@@ -10,6 +10,13 @@ namespace Weapons
 
         [SerializeField] private float fireRate;
 
+        protected override void Start()
+        {
+            base.Start();
+
+            CurrentFireMode = FireModes[0];
+        }
+
         protected override IEnumerator Fire()
         {
             while (true)

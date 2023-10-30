@@ -1,40 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public abstract class  EnemyBaseState : BaseState<EnemyStateManager.EnemyState>
 {
-    protected EnemyPathfinding pathfinding;
-    protected EnemyStateManager enemyStateManager;
+    protected EnemyPathfinding Pathfinding => stateManager.Pathfinding;
+    protected readonly EnemyStateManager stateManager;
+    protected EnemyPerception Perception => stateManager.Perception;
 
-    protected bool bPlayerInSight = false;
-    public EnemyBaseState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager, EnemyPathfinding pathfinding) : base(state)
+    public EnemyBaseState(EnemyStateManager.EnemyState state, EnemyStateManager stateManager) : base(state)
    {
-        this.enemyStateManager = enemyStateManager;
-        this.pathfinding = pathfinding;
+        this.stateManager = stateManager;
    }
 
     public override void EnterState()
     {
-        EnemyPerception.PlayerFound += OnPlayerFound;
-        EnemyPerception.PlayerLost += OnPlayerLost;
     }
 
     public override void ExitState()
     {
-        EnemyPerception.PlayerFound -= OnPlayerFound;
-        EnemyPerception.PlayerLost -= OnPlayerLost;
     }
 
-    protected virtual void OnPlayerFound()
+    public override void UpdateState()
     {
-        bPlayerInSight = true;
+        
     }
-
-    protected virtual void OnPlayerLost()
-    {
-        bPlayerInSight = false;
-    }
-
-
 }

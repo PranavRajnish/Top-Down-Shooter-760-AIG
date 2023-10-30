@@ -12,9 +12,10 @@ namespace Weapons
         public PlayerWeaponControl WeaponWielder { get; private set; }
         public abstract GunType Type { get; }
         public abstract FireMode[] FireModes { get; }
-
+        public FireMode CurrentFireMode { get; protected set; }
         public float BulletDamage => bulletDamage;
         public Transform Muzzle => muzzle;
+        public int BulletsRemaining { get; private set; }
 
         [SerializeField] private Bullet bulletPrefab;
         [SerializeField] private Transform muzzle;
@@ -22,23 +23,27 @@ namespace Weapons
         [SerializeField] private float reloadTime = 10f;
         [SerializeField] private float bulletDamage;
 
-        private int _bulletsRemaining;
         private List<Bullet> _poolOfBullets;
         private Coroutine _shootingCoroutine;
         private Coroutine _reloadCoroutine;
+        private bool _triggerPulled;
 
-        protected void Start()
+        protected virtual void Start()
         {
             _poolOfBullets = new List<Bullet>();
-            _bulletsRemaining = magSize;
+            BulletsRemaining = magSize;
             bulletPrefab.gameObject.SetActive(false);
         }
 
         public void OnTriggerPulled()
         {
+            if(_triggerPulled)
+                return;
+            
             if (_shootingCoroutine != null)
                 StopCoroutine(_shootingCoroutine);
 
+            _triggerPulled = true;
             _shootingCoroutine = StartCoroutine(Fire());
         }
 
@@ -46,7 +51,7 @@ namespace Weapons
 
         protected void FireBullet()
         {
-            if (_bulletsRemaining <= 0)
+            if (BulletsRemaining <= 0)
                 return;
 
             if (_poolOfBullets.Count <= magSize && _poolOfBullets.All(bullet => bullet.gameObject.activeSelf))
@@ -56,7 +61,7 @@ namespace Weapons
 
             foreach (var bullet in _poolOfBullets.Where(bullet => !bullet.gameObject.activeSelf))
             {
-                _bulletsRemaining--;
+                BulletsRemaining--;
                 bullet.OnBulletFired();
                 break;
             }
@@ -66,11 +71,13 @@ namespace Weapons
         {
             if (_shootingCoroutine != null)
                 StopCoroutine(_shootingCoroutine);
+
+            _triggerPulled = false;
         }
 
         public void OnReloadPressed()
         {
-            if (_reloadCoroutine == null && _bulletsRemaining < magSize)
+            if (_reloadCoroutine == null && BulletsRemaining < magSize)
                 _reloadCoroutine = StartCoroutine(Reload());
         }
 
@@ -78,7 +85,7 @@ namespace Weapons
         {
             yield return new WaitForSeconds(reloadTime);
 
-            _bulletsRemaining = magSize;
+            BulletsRemaining = magSize;
             _reloadCoroutine = null;
         }
     }

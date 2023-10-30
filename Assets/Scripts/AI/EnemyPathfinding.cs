@@ -6,33 +6,37 @@ using Unity.VisualScripting;
 
 public class EnemyPathfinding : MonoBehaviour
 {
-    public delegate void DReachedEndOfPath();
-    public static DReachedEndOfPath ReachedEndOfPath;
-
-    [SerializeField]
-    private Vector2 target;
-    [SerializeField]
-    private float speed = 200f;
-    [SerializeField]
-    private float nextWaypointDistance = 3f;
-    [SerializeField]
-    private Transform EnemySprite;
+    [SerializeField] private Vector2 target;
+    [SerializeField] private float speed = 200f;
+    [SerializeField] private float nextWaypointDistance = 3f;
+    [SerializeField] private Transform EnemySprite;
 
     Path path;
     int currentWaypoint = 0;
-    bool bReachedEndOfPath = false;
+    public bool ReachedEndOfPath { get; private set; }
     bool bIsPathfinding = false;
 
 
-    private Seeker seeker;
+    private Seeker _seeker;
+
+    private Seeker Seeker
+    {
+        get
+        {
+            if (!_seeker)
+                _seeker = GetComponent<Seeker>();
+            
+            return _seeker;
+        }
+    }
+
+
     private Rigidbody2D rb;
+
     // Start is called before the first frame update
     void Start()
     {
-        seeker = GetComponent<Seeker>();
         //rb = GetComponent<Rigidbody2D>();
-
-        
     }
 
     // Update is called once per frame
@@ -43,24 +47,22 @@ public class EnemyPathfinding : MonoBehaviour
 
         if (currentWaypoint >= path.vectorPath.Count)
         {
-            ReachedEndOfPath?.Invoke();
-            bReachedEndOfPath = true;
+            ReachedEndOfPath = true;
             return;
         }
         else
         {
-            
-            bReachedEndOfPath = false;
+            ReachedEndOfPath = false;
         }
 
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - (Vector2) transform.position).normalized;
-        Vector2 velocity = direction.normalized * speed * Time.deltaTime;
+        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - (Vector2)transform.position).normalized;
+        Vector2 velocity = direction.normalized * (speed * Time.deltaTime);
 
         FaceTarget(velocity);
         //FaceTarget((Vector3)target - transform.position);
 
         float distance = Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]);
-        if(distance < nextWaypointDistance)
+        if (distance < nextWaypointDistance)
         {
             currentWaypoint++;
         }
@@ -76,27 +78,26 @@ public class EnemyPathfinding : MonoBehaviour
         Debug.Log("New Target Set");
         target = targetPoint;
         bIsPathfinding = true;
-        bReachedEndOfPath = false;
-        InvokeRepeating("UpdatePath", 0f, 0.5f);
+        ReachedEndOfPath = false;
+        //InvokeRepeating(nameof(UpdatePath), 0f, 0.5f);
+        Seeker.CancelCurrentPathRequest();
+        UpdatePath();
     }
-    
+
     public void StopCalculatingPath()
     {
-        bIsPathfinding=false;
-        CancelInvoke("UpdatePath");
+        bIsPathfinding = false;
+        //CancelInvoke(nameof(UpdatePath));
     }
 
     private void UpdatePath()
     {
-        if (seeker.IsDone() && !bReachedEndOfPath)
-        {
-            seeker.StartPath(transform.position, target, OnPathFound);
-        }
+        Seeker.StartPath(transform.position, target, OnPathFound);
     }
 
     private void OnPathFound(Path p)
     {
-        if(!p.error)
+        if (!p.error)
         {
             path = p;
             currentWaypoint = 0;
@@ -114,7 +115,11 @@ public class EnemyPathfinding : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(!bIsPathfinding) { return; }
+        if (!bIsPathfinding)
+        {
+            return;
+        }
+
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(target, 0.5f);
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyIdleState : EnemyBaseState
 {
-    public EnemyIdleState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager, EnemyPathfinding pathfinding) : base(state, enemyStateManager, pathfinding) { }
+    public EnemyIdleState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
 
     public override void EnterState()
     {
@@ -18,6 +18,9 @@ public class EnemyIdleState : EnemyBaseState
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
+        if (Perception.CanSeePlayer)
+            return EnemyStateManager.EnemyState.Shooting;
+        
         return stateKey;
     }
 

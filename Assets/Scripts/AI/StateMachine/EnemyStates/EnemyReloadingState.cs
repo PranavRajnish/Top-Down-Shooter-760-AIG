@@ -1,55 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Weapons;
 
 public class EnemyReloadingState : EnemyBaseState
 {
-    public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager, EnemyPathfinding pathfinding) : base(state, enemyStateManager, pathfinding) { }
+    private Gun _currentGun;
+    public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
+        _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
+        _currentGun.OnReloadPressed();
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
-        throw new System.NotImplementedException();
+        if (_currentGun.BulletsRemaining <= 0)
+            return stateKey;
+
+        if (Perception.CanSeePlayer)
+            return EnemyStateManager.EnemyState.Shooting;
+
+        return EnemyStateManager.EnemyState.FindPlayer;
     }
 
     public override void OnTriggerEnter(Collider2D other)
     {
-        throw new System.NotImplementedException();
     }
 
     public override void OnTriggerExit(Collider2D other)
     {
-        throw new System.NotImplementedException();
     }
 
     public override void OnTriggerStay(Collider2D other)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public override void UpdateState()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

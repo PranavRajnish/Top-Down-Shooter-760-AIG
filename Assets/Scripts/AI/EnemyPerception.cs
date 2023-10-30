@@ -5,12 +5,6 @@ using UnityEngine.EventSystems;
 
 public class EnemyPerception : MonoBehaviour
 {
-    public delegate void DPlayerFound();
-    public static DPlayerFound PlayerFound;
-
-    public delegate void DPlayerLost();
-    public static DPlayerLost PlayerLost;
-
     [SerializeField]
     private float fovAngle = 45f;
     [SerializeField]
@@ -20,7 +14,7 @@ public class EnemyPerception : MonoBehaviour
 
     public GameObject player;
 
-    bool bCanSeePlayer = false;
+    public bool CanSeePlayer { get; private set; }
 
     // Start is called before the first frame update
     void Start()
@@ -40,10 +34,7 @@ public class EnemyPerception : MonoBehaviour
         // Checking Distance
         if (!(distanceToPlayer < sightDistance))
         {
-            if (bCanSeePlayer)
-                PlayerLost?.Invoke();
-
-            bCanSeePlayer = false;
+            CanSeePlayer = false;
             return;
         }
             
@@ -53,9 +44,7 @@ public class EnemyPerception : MonoBehaviour
         dirToPlayer.Normalize();
         if(!(Vector2.Angle(transform.parent.right, dirToPlayer) < fovAngle/2f))
         {
-            if (bCanSeePlayer)
-                PlayerLost?.Invoke();
-            bCanSeePlayer = false;
+            CanSeePlayer = false;
             return;
         }
 
@@ -63,14 +52,11 @@ public class EnemyPerception : MonoBehaviour
         RaycastHit2D raycastHit = Physics2D.Raycast(transform.parent.position, dirToPlayer, distanceToPlayer, sightObstacles.value);
         if(raycastHit.collider != null)
         {
-            if (bCanSeePlayer)
-                PlayerLost?.Invoke();
-            bCanSeePlayer = false;
+            CanSeePlayer = false;
             return;
         }
 
-        bCanSeePlayer = true;
-        PlayerFound?.Invoke();
+        CanSeePlayer = true;
         Debug.Log("Player");
         
     }
@@ -80,7 +66,7 @@ public class EnemyPerception : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, transform.parent.right * sightDistance);
 
-        if (bCanSeePlayer)
+        if (CanSeePlayer)
             Gizmos.color = Color.red;
         else
             Gizmos.color = Color.yellow;

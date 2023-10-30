@@ -45,14 +45,15 @@ namespace Weapons
             transform.position += (Vector3)_currentDirection * (Time.deltaTime * bulletSpeed);
         }
 
-        private void OnCollisionEnter(Collision other)
+        private void OnCollisionEnter2D(Collision2D other)
         {
-            var playerDefenseStats = other.gameObject.GetComponent<PlayerDefenseStats>();
+            var playerDefenseStats = other.gameObject.GetComponent<CharacterDefenseStats>();
 
             if (playerDefenseStats)
             {
                 // Deal damage.
                 playerDefenseStats.OnDamageDealt(this);
+                gameObject.SetActive(false);
             }
 
             // var wall = other.gameObject.GetComponent<Wall>();
@@ -61,8 +62,11 @@ namespace Weapons
             // {
             //     // Show bullet marks.
             // }
+        }
 
-            gameObject.SetActive(false);
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log($"Collided with {other.name}", other.gameObject);
         }
     }
 }
