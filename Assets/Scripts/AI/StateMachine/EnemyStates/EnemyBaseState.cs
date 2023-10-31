@@ -1,3 +1,6 @@
+using UnityEngine;
+using Weapons;
+
 public abstract class  EnemyBaseState : BaseState<EnemyStateManager.EnemyState>
 {
     protected EnemyPathfinding Pathfinding => stateManager.Pathfinding;

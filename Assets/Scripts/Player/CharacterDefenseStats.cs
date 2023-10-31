@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Weapons;
@@ -12,6 +13,8 @@ namespace Player
 
         private const float MaxPlayerHealth = 100f;
         private const float MaxPlayerArmor = 50f;
+
+        public event Action OnCharacterHit;
 
         public void OnDamageDealt(Bullet bullet)
         {
@@ -30,13 +33,12 @@ namespace Player
                 {
                     if(!isPlayer)
                         Destroy(gameObject);
-                    else
-                    {
-                        
-                    }
+                    
                     new CharacterDeathEvent(CharacterID).Raise();
                 }
             }
+            
+            OnCharacterHit?.Invoke();
         }
     }
 

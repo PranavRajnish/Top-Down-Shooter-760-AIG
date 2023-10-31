@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using TMPro;
 using UnityEngine;
 
@@ -13,6 +15,8 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     public EnemyPathfinding Pathfinding => pathfinding;
     public EnemyPerception Perception => enemyPerception;
     public PolygonCollider2D BaseCollider => baseCollider;
+
+    public bool gotHit;
 
 
     private void Start()
@@ -29,6 +33,21 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
         currentState.EnterState();
     }
 
+    private void OnEnable()
+    {
+        GetComponent<CharacterDefenseStats>().OnCharacterHit += OnCharacterHit;
+    }
+
+    private void OnDisable()
+    {
+        GetComponent<CharacterDefenseStats>().OnCharacterHit -= OnCharacterHit;
+    }
+
+    private void OnCharacterHit()
+    {
+        gotHit = true;
+    }
+
     public enum EnemyState
     {
         Capturing,
@@ -42,5 +61,4 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     private void Awake()
     {
     }
-
 }

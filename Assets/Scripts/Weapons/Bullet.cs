@@ -45,7 +45,7 @@ namespace Weapons
             transform.position += (Vector3)_currentDirection * (Time.deltaTime * bulletSpeed);
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
             var playerDefenseStats = other.gameObject.GetComponent<CharacterDefenseStats>();
 
@@ -62,11 +62,6 @@ namespace Weapons
             // {
             //     // Show bullet marks.
             // }
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            Debug.Log($"Collided with {other.name}", other.gameObject);
         }
     }
 }

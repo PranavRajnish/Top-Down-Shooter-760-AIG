@@ -14,6 +14,8 @@ public class EnemyFindPlayerState : EnemyBaseState
         base.EnterState();
         Debug.Log("Entered Capturing State");
 
+        stateManager.gotHit = false;
+
         _currentTarget = Perception.player.transform.position;
         Pathfinding.CalculateNewPath(_currentTarget);
         

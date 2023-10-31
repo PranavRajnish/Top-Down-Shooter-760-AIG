@@ -18,6 +18,9 @@ public class EnemyIdleState : EnemyBaseState
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
+        if (stateManager.gotHit)
+            return EnemyStateManager.EnemyState.FindPlayer;
+        
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;
         
