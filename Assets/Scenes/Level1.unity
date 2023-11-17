@@ -76864,6 +76864,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 7397095567648011467, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: maximumDistanceToCover
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7397095567648011467, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: initialCoverSphereRadius
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7397095567648011467, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: maximumCoverSphereRadius
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7397095567648011467, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: coverSphereRadiusIncrement
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7709267336096304245, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
       propertyPath: health
       value: 1

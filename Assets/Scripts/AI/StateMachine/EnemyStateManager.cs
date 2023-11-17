@@ -9,7 +9,6 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
 {
     [SerializeField] private EnemyPathfinding pathfinding;
     [SerializeField] EnemyPerception enemyPerception;
-
     [SerializeField] private PolygonCollider2D baseCollider = null;
 
     public EnemyPathfinding Pathfinding => pathfinding;

@@ -11,13 +11,16 @@ public class EnemyReloadingState : EnemyBaseState
     public override void EnterState()
     {
         _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
-        _currentGun.OnReloadPressed();
+        //_currentGun.OnReloadPressed();
+
+        Pathfinding.hidingAttemptFinished += OnHidingAttemptFinished;
+        Pathfinding.FindCover(Perception.player.transform);
 
     }
 
     public override void ExitState()
     {
-
+        Pathfinding.hidingAttemptFinished -= OnHidingAttemptFinished;
     }
 
     public override EnemyStateManager.EnemyState GetNextState()
@@ -41,5 +44,10 @@ public class EnemyReloadingState : EnemyBaseState
 
     public override void OnTriggerStay(Collider2D other)
     {
+    }
+
+    private void OnHidingAttemptFinished()
+    {
+        _currentGun.OnReloadPressed();
     }
 }
