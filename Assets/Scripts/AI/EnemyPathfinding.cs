@@ -16,6 +16,9 @@ public class EnemyPathfinding : MonoBehaviour
     public bool ReachedEndOfPath { get; private set; }
     bool bIsPathfinding = false;
 
+    public delegate void DReachedEndOfPath();
+    public DReachedEndOfPath reachedEndOfPath;
+
 
     private Seeker _seeker;
 
@@ -48,6 +51,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (currentWaypoint >= path.vectorPath.Count)
         {
             ReachedEndOfPath = true;
+            reachedEndOfPath?.Invoke();
             return;
         }
         else

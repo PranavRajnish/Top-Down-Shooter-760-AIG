@@ -12,6 +12,11 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
 
     [SerializeField] private PolygonCollider2D baseCollider = null;
 
+    [Header ("Idle State Properties")]
+    public float patrolPointRadius = 10f;
+    public float waitTimeBetweenPatrol = 5f;
+
+
     public EnemyPathfinding Pathfinding => pathfinding;
     public EnemyPerception Perception => enemyPerception;
     public PolygonCollider2D BaseCollider => baseCollider;
