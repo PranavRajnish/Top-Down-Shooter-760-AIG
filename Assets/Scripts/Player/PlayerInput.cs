@@ -73,6 +73,15 @@ namespace Player
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Gun Change"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""f99bdeb8-7472-4384-9811-b47c22693fc8"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -273,6 +282,17 @@ namespace Player
                     ""action"": ""Rotation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd087b83-63a6-42bc-81c4-95d6df6282cc"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Gun Change"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -286,6 +306,7 @@ namespace Player
             m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
             m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
             m_Player_ADS = m_Player.FindAction("ADS", throwIfNotFound: true);
+            m_Player_GunChange = m_Player.FindAction("Gun Change", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -352,6 +373,7 @@ namespace Player
         private readonly InputAction m_Player_Attack;
         private readonly InputAction m_Player_Reload;
         private readonly InputAction m_Player_ADS;
+        private readonly InputAction m_Player_GunChange;
         public struct PlayerActions
         {
             private @PlayerInput m_Wrapper;
@@ -361,6 +383,7 @@ namespace Player
             public InputAction @Attack => m_Wrapper.m_Player_Attack;
             public InputAction @Reload => m_Wrapper.m_Player_Reload;
             public InputAction @ADS => m_Wrapper.m_Player_ADS;
+            public InputAction @GunChange => m_Wrapper.m_Player_GunChange;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -385,6 +408,9 @@ namespace Player
                 @ADS.started += instance.OnADS;
                 @ADS.performed += instance.OnADS;
                 @ADS.canceled += instance.OnADS;
+                @GunChange.started += instance.OnGunChange;
+                @GunChange.performed += instance.OnGunChange;
+                @GunChange.canceled += instance.OnGunChange;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -404,6 +430,9 @@ namespace Player
                 @ADS.started -= instance.OnADS;
                 @ADS.performed -= instance.OnADS;
                 @ADS.canceled -= instance.OnADS;
+                @GunChange.started -= instance.OnGunChange;
+                @GunChange.performed -= instance.OnGunChange;
+                @GunChange.canceled -= instance.OnGunChange;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -428,6 +457,7 @@ namespace Player
             void OnAttack(InputAction.CallbackContext context);
             void OnReload(InputAction.CallbackContext context);
             void OnADS(InputAction.CallbackContext context);
+            void OnGunChange(InputAction.CallbackContext context);
         }
     }
 }

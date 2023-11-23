@@ -57,8 +57,6 @@ public class EnemyPerception : MonoBehaviour
         }
 
         CanSeePlayer = true;
-        Debug.Log("Player");
-        
     }
 
     private void OnDrawGizmos()
