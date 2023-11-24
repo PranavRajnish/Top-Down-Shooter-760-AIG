@@ -62,11 +62,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (currentWaypoint >= path.vectorPath.Count)
         {
             ReachedEndOfPath = true;
-            if(bIsTryingToHide)
-            {
-                bIsTryingToHide = false;
-                hidingAttemptFinished?.Invoke();
-            }
+            
             return;
         }
         else
