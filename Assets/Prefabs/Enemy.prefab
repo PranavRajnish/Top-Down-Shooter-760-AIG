@@ -241,6 +241,15 @@ MonoBehaviour:
   speed: 75
   nextWaypointDistance: 1
   EnemySprite: {fileID: 8507243001878668077}
+  TargetPosition: {x: 0, y: 0, z: 0}
+  initialCoverSphereRadius: 4
+  maximumCoverSphereRadius: 12
+  coverSphereRadiusIncrement: 4
+  raysPerCoverSphere: 12
+  maximumDistanceToCover: 10
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &9178881375875192692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,6 +265,9 @@ MonoBehaviour:
   pathfinding: {fileID: 7397095567648011467}
   enemyPerception: {fileID: 8050610016319267382}
   baseCollider: {fileID: 0}
+  patrolPointRadius: 10
+  waitTimeBetweenPatrol: 5
+  gotHit: 0
 --- !u!114 &152981525468386745
 MonoBehaviour:
   m_ObjectHideFlags: 0
