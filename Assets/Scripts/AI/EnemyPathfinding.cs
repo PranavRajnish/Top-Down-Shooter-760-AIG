@@ -10,6 +10,20 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private float speed = 200f;
     [SerializeField] private float nextWaypointDistance = 3f;
     [SerializeField] private Transform EnemySprite;
+    [SerializeField] private Vector3 TargetPosition;
+
+    [Header("Cover finding properties")]
+    [SerializeField] private float initialCoverSphereRadius = 4f;
+    [SerializeField] private float maximumCoverSphereRadius = 12f;
+    [SerializeField] private float coverSphereRadiusIncrement = 4f;
+    [SerializeField] private int raysPerCoverSphere = 12;
+    [SerializeField] private float maximumDistanceToCover = 10f;
+    [SerializeField] private LayerMask obstacleMask;
+
+    public delegate void DHidingAttemptFinished();
+    public DHidingAttemptFinished hidingAttemptFinished;
+
+    private bool bIsTryingToHide = false;
 
     Path path;
     int currentWaypoint = 0;
@@ -52,6 +66,13 @@ public class EnemyPathfinding : MonoBehaviour
         {
             ReachedEndOfPath = true;
             reachedEndOfPath?.Invoke();
+
+            if (bIsTryingToHide)
+            {
+                bIsTryingToHide = false;
+                hidingAttemptFinished?.Invoke();
+            }
+
             return;
         }
         else
@@ -75,6 +96,43 @@ public class EnemyPathfinding : MonoBehaviour
         float newX = transform.position.x + velocity.x * Time.deltaTime;
         float newY = transform.position.y + velocity.y * Time.deltaTime;
         transform.position = new Vector2(newX, newY);
+    }
+
+    public void FindCover(Transform coverTarget)
+    {
+        float angleIncrement = 360 / raysPerCoverSphere;
+        for (float r = initialCoverSphereRadius; r <= maximumCoverSphereRadius; r += coverSphereRadiusIncrement)
+        {
+            float minDistance = Mathf.Infinity;
+            Vector2 targetPoint = Vector2.zero;
+            bool bFoundValidCoverSpot = false;
+            for (int i = 0; i < raysPerCoverSphere; i++)
+            {
+                Quaternion vectorRotation = Quaternion.AngleAxis(angleIncrement * i, Vector3.forward);
+                Vector2 rayStart = coverTarget.position + (r * (vectorRotation * Vector2.right));
+                RaycastHit2D raycastHit;
+                raycastHit = Physics2D.Raycast(rayStart, (Vector2)coverTarget.position - rayStart, r, obstacleMask.value);
+                Debug.DrawRay(rayStart, (Vector2)coverTarget.position - rayStart, Color.gray, 5f);
+                float DistanceToCover = Vector2.Distance(transform.position, raycastHit.point);
+                if (raycastHit.collider != null && DistanceToCover <= maximumDistanceToCover && DistanceToCover < minDistance)
+                {
+                    bFoundValidCoverSpot = true;
+                    targetPoint = raycastHit.point;
+                    minDistance = Vector2.Distance(transform.position, raycastHit.point);
+                }
+            }
+            if (bFoundValidCoverSpot)
+            {
+                CalculateNewPath(targetPoint);
+                bIsTryingToHide = true;
+                break;
+            }
+            else
+            {
+                hidingAttemptFinished?.Invoke();
+            }
+        }
+
     }
 
     public void CalculateNewPath(Vector2 targetPoint)
