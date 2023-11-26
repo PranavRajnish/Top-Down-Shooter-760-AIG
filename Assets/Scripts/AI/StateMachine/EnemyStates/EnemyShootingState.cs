@@ -17,19 +17,19 @@ public class EnemyShootingState : EnemyBaseState
         _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
     }
 
-
     public override void ExitState()
     {
         base.ExitState();
 
-        _currentGun.OnTriggerReleased();
+        if (_currentGun)
+            _currentGun.OnTriggerReleased();
     }
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
         if (_currentGun.BulletsRemaining <= 0)
             return EnemyStateManager.EnemyState.Reloading;
-        
+
         if (Perception.CanSeePlayer)
             return stateKey;
 
@@ -57,5 +57,8 @@ public class EnemyShootingState : EnemyBaseState
 
             _currentGun.OnTriggerPulled();
         }
+
+        if (_currentGun.CurrentFireMode != FireMode.Auto)
+            _currentGun.OnTriggerReleased();
     }
 }
