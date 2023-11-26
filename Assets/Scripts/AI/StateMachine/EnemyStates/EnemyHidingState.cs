@@ -7,10 +7,19 @@ public class EnemyHidingState : EnemyBaseState
 {
     public EnemyHidingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
 
+    private bool bHidingAttemptFinished = false;
+    private bool bTransitionToFindPlayerState = false;
+    private float hidingTime;
+
+
     public override void EnterState()
     {
+        Debug.Log("Entered Hiding State");
+
         Pathfinding.hidingAttemptFinished += OnHidingAttemptFinished;
         Pathfinding.FindCover(Perception.player.transform);
+
+        hidingTime = Random.Range(stateManager.sniperWaitingTimeMin, stateManager.sniperWaitingTimeMax);
     }
 
     public override void ExitState()
@@ -18,8 +27,19 @@ public class EnemyHidingState : EnemyBaseState
         Pathfinding.hidingAttemptFinished -= OnHidingAttemptFinished;
     }
 
+    public override void UpdateState()
+    {
+        base.UpdateState();
+
+    }
+
     public override EnemyStateManager.EnemyState GetNextState()
     {     
+        if(bHidingAttemptFinished)
+        {
+            return EnemyStateManager.EnemyState.Reloading;
+        }
+
         return stateKey;
 
     }
@@ -38,6 +58,7 @@ public class EnemyHidingState : EnemyBaseState
 
     private void OnHidingAttemptFinished()
     {
-
+        Debug.Log("Hiding Attempt Finished");
+        bHidingAttemptFinished = true;
     }
 }
