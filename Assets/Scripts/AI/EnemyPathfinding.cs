@@ -110,6 +110,15 @@ public class EnemyPathfinding : MonoBehaviour
             {
                 Quaternion vectorRotation = Quaternion.AngleAxis(angleIncrement * i, Vector3.forward);
                 Vector2 rayStart = coverTarget.position + (r * (vectorRotation * Vector2.right));
+
+                // If ray start is in obstacle, should not be valid ray
+                Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
+                if (collider != null)
+                {
+                    Debug.Log("Ray start in obstacle");
+                    continue;
+                }
+
                 RaycastHit2D raycastHit;
                 raycastHit = Physics2D.Raycast(rayStart, (Vector2)coverTarget.position - rayStart, r, obstacleMask.value);
                 Debug.DrawRay(rayStart, (Vector2)coverTarget.position - rayStart, Color.gray, 5f);
@@ -129,6 +138,7 @@ public class EnemyPathfinding : MonoBehaviour
             }
             else
             {
+                Debug.Log("No hiding spot found");
                 hidingAttemptFinished?.Invoke();
             }
         }

@@ -80,4 +80,9 @@ public class EnemyPerception : MonoBehaviour
         Gizmos.DrawRay(transform.position, downRayDirection);
         Gizmos.DrawLine(transform.position + downRayDirection, transform.position + upRayDirection);
     }
+
+    public float GetSightDistance()
+    {
+        return sightDistance;
+    }
 }

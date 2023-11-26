@@ -12,7 +12,7 @@ public class EnemyFindPlayerState : EnemyBaseState
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("Entered Capturing State");
+        Debug.Log("Entered Find Player State");
 
         stateManager.gotHit = false;
 
