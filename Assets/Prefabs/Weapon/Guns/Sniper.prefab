@@ -102,7 +102,7 @@ MonoBehaviour:
   muzzle: {fileID: 9108977584653528981}
   magSize: 10
   reloadTime: 4
-  bulletDamage: 5
+  bulletDamage: 20
 --- !u!1 &8195062002509942875
 GameObject:
   m_ObjectHideFlags: 0

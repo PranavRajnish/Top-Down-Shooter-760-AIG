@@ -4,6 +4,7 @@ public class EnemyFindPlayerState : EnemyBaseState
 {
     private PolygonCollider2D baseCollider => stateManager.BaseCollider;
     private Vector2 _currentTarget;
+    private double _startTime;
     
     public EnemyFindPlayerState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
     {
@@ -18,7 +19,7 @@ public class EnemyFindPlayerState : EnemyBaseState
 
         _currentTarget = Perception.player.transform.position;
         Pathfinding.CalculateNewPath(_currentTarget);
-        
+        _startTime = Time.time;
     }
 
     public override void ExitState()
@@ -28,6 +29,9 @@ public class EnemyFindPlayerState : EnemyBaseState
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
+        // if (Time.time - _startTime > 5)
+        //     return EnemyStateManager.EnemyState.Capturing;
+        
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;
 

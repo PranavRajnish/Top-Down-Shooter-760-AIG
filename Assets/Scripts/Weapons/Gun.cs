@@ -16,6 +16,7 @@ namespace Weapons
         public float BulletDamage => bulletDamage;
         public Transform Muzzle => muzzle;
         public int BulletsRemaining { get; private set; }
+        public float NormalizedBulletsRemaining => (float)BulletsRemaining / magSize;
 
         [SerializeField] private Bullet bulletPrefab;
         [SerializeField] private Transform muzzle;
@@ -37,9 +38,9 @@ namespace Weapons
 
         public void OnTriggerPulled()
         {
-            if(_triggerPulled)
+            if (_triggerPulled)
                 return;
-            
+
             if (_shootingCoroutine != null)
                 StopCoroutine(_shootingCoroutine);
 

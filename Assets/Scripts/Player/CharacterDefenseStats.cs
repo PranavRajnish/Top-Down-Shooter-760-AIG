@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Weapons;
 
 namespace Player
@@ -13,6 +12,8 @@ namespace Player
 
         private const float MaxPlayerHealth = 100f;
         private const float MaxPlayerArmor = 50f;
+
+        public float NormalizedHealth => (health + armor) / MaxPlayerHealth;
 
         public event Action OnCharacterHit;
 

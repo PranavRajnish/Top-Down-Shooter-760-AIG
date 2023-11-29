@@ -103,7 +103,7 @@ MonoBehaviour:
   magSize: 30
   reloadTime: 3
   bulletDamage: 1
-  fireRate: 100
+  fireRate: 40
 --- !u!1 &8195062002509942875
 GameObject:
   m_ObjectHideFlags: 0
