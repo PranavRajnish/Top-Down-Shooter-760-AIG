@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 
 public class EnemyIdleState : EnemyBaseState
@@ -35,7 +36,7 @@ public class EnemyIdleState : EnemyBaseState
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;
         
-        return stateKey;
+        return StateKey;
     }
 
     public override void UpdateState()

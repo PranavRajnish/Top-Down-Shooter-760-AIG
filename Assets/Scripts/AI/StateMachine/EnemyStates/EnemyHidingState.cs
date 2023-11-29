@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 using Weapons;
 
@@ -34,7 +35,7 @@ public class EnemyHidingState : EnemyBaseState
             return EnemyStateManager.EnemyState.Reloading;
         }
 
-        return stateKey;
+        return StateKey;
 
     }
 

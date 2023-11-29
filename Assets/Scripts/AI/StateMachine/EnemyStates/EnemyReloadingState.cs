@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 using Weapons;
 
@@ -23,7 +24,7 @@ public class EnemyReloadingState : EnemyBaseState
     public override EnemyStateManager.EnemyState GetNextState()
     {
         if (_currentGun.BulletsRemaining <= 0)
-            return stateKey;
+            return StateKey;
 
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;

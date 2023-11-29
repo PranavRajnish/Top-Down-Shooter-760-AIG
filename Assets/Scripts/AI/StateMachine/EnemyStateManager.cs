@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using AI.StateMachine;
+using AI.StateMachine.EnemyStates;
 using Player;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using Weapons;
 
@@ -47,15 +44,15 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
         baseCollider = GameObject.FindWithTag("Base").GetComponent<PolygonCollider2D>();
         OnGunChange();
 
-        currentState = new EnemyCapturingState(EnemyState.Capturing, this);
-        states.Add(EnemyState.Capturing, currentState);
-        states.Add(EnemyState.FindPlayer, new EnemyFindPlayerState(EnemyState.FindPlayer, this));
-        states.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle, this));
-        states.Add(EnemyState.Shooting, new EnemyShootingState(EnemyState.Shooting, this));
-        states.Add(EnemyState.Reloading, new EnemyReloadingState(EnemyState.Reloading, this));
-        states.Add(EnemyState.Hiding, new EnemyHidingState(EnemyState.Hiding, this));
+        CurrentState = new EnemyCapturingState(EnemyState.Capturing, this);
+        States.Add(EnemyState.Capturing, CurrentState);
+        States.Add(EnemyState.FindPlayer, new EnemyFindPlayerState(EnemyState.FindPlayer, this));
+        States.Add(EnemyState.Idle, new EnemyIdleState(EnemyState.Idle, this));
+        States.Add(EnemyState.Shooting, new EnemyShootingState(EnemyState.Shooting, this));
+        States.Add(EnemyState.Reloading, new EnemyReloadingState(EnemyState.Reloading, this));
+        States.Add(EnemyState.Hiding, new EnemyHidingState(EnemyState.Hiding, this));
 
-        currentState.EnterState();
+        CurrentState.EnterState();
     }
 
     private void OnEnable()
@@ -75,13 +72,10 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
 
 
     // Start is called before the first frame update
-    private void Awake()
-    {
-    }
 
     private void OnGunChange()
-    {
-        currentGun = transform.GetComponent<Enemy>().currentGun;
+    {   
+        currentGun = transform.GetComponent<Enemy>().CurrentGun;
 
         if (currentGun is ARGun)
         {

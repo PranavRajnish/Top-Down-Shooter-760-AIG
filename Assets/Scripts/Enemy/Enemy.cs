@@ -4,9 +4,12 @@ using Weapons;
 public class Enemy : MonoBehaviour
 {
     public delegate void DEnemyDestroyed();
+
     public DEnemyDestroyed EnemyDestroyed;
 
-    public Gun currentGun; 
+    [SerializeField] private Gun currentGun;
+
+    public Gun CurrentGun => currentGun;
 
     private void OnDestroy()
     {

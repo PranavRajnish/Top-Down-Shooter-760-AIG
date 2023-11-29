@@ -1,3 +1,4 @@
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 
 public class EnemyFindPlayerState : EnemyBaseState
@@ -35,7 +36,7 @@ public class EnemyFindPlayerState : EnemyBaseState
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;
 
-        return stateKey;
+        return StateKey;
     }
 
     public override void OnTriggerEnter(Collider2D other)

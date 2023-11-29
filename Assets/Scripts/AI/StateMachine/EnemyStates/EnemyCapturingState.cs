@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 
 public class EnemyCapturingState : EnemyBaseState
@@ -44,7 +45,7 @@ public class EnemyCapturingState : EnemyBaseState
             return EnemyStateManager.EnemyState.Shooting;
 
         if (!Pathfinding.ReachedEndOfPath)
-            return stateKey;
+            return StateKey;
         
         return EnemyStateManager.EnemyState.Idle;
     }
