@@ -1,3 +1,4 @@
+using Player;
 using UnityEngine;
 using Weapons;
 
@@ -5,10 +6,12 @@ public class EnemyShootingState : EnemyBaseState
 {
     private Gun _currentGun;
     private Rigidbody playerRB;
+    private readonly CharacterDefenseStats _defenseStats;
     private Transform Transform => stateManager.transform;
 
     public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
     {
+        _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
     }
 
     public override void EnterState()
@@ -32,9 +35,9 @@ public class EnemyShootingState : EnemyBaseState
 
     public override EnemyStateManager.EnemyState GetNextState()
     {
-        if (_currentGun.BulletsRemaining <= 0)
+        if (_currentGun.NormalizedBulletsRemaining <= 0.3f || _defenseStats.NormalizedHealth <= 0.6f)
             return EnemyStateManager.EnemyState.Hiding;
-        
+
         if (Perception.CanSeePlayer)
             return stateKey;
 
@@ -62,7 +65,7 @@ public class EnemyShootingState : EnemyBaseState
 
             _currentGun.OnTriggerPulled();
 
-            if(_currentGun is ARGun)
+            if (_currentGun is ARGun)
             {
                 Vector2 playerVelocity = playerRB.velocity;
                 if (playerRB && playerVelocity.sqrMagnitude > 1f)
@@ -70,8 +73,6 @@ public class EnemyShootingState : EnemyBaseState
                     Pathfinding.CalculateNewPath((Vector2)stateManager.transform.position + playerVelocity.normalized);
                 }
             }
-            
-           
         }
 
         if (_currentGun.CurrentFireMode != FireMode.Auto)

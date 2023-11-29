@@ -27,12 +27,6 @@ public class EnemyHidingState : EnemyBaseState
         Pathfinding.hidingAttemptFinished -= OnHidingAttemptFinished;
     }
 
-    public override void UpdateState()
-    {
-        base.UpdateState();
-
-    }
-
     public override EnemyStateManager.EnemyState GetNextState()
     {     
         if(bHidingAttemptFinished)
