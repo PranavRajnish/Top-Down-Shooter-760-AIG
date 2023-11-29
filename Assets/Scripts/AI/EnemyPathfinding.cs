@@ -17,6 +17,8 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private float maximumCoverSphereRadius = 12f;
     [SerializeField] private float coverSphereRadiusIncrement = 4f;
     [SerializeField] private int raysPerCoverSphere = 12;
+    [SerializeField] private float maxPerpendicularDistance = 6f;
+    [SerializeField] private float coverRayIncrement = 2f;
     [SerializeField] private float maximumDistanceToCover = 10f;
     [SerializeField] private LayerMask obstacleMask;
 
@@ -100,47 +102,92 @@ public class EnemyPathfinding : MonoBehaviour
 
     public void FindCover(Transform coverTarget)
     {
-        float angleIncrement = 360 / raysPerCoverSphere;
-        for (float r = initialCoverSphereRadius; r <= maximumCoverSphereRadius; r += coverSphereRadiusIncrement)
+        /* float angleIncrement = 360 / raysPerCoverSphere;
+         for (float r = initialCoverSphereRadius; r <= maximumCoverSphereRadius; r += coverSphereRadiusIncrement)
+         {
+             float minDistance = Mathf.Infinity;
+             Vector2 targetPoint = Vector2.zero;
+             bool bFoundValidCoverSpot = false;
+             for (int i = 0; i < raysPerCoverSphere; i++)
+             {
+                 Quaternion vectorRotation = Quaternion.AngleAxis(angleIncrement * i, Vector3.forward);
+                 Vector2 rayStart = coverTarget.position + (r * (vectorRotation * Vector2.right));
+
+                 // If ray start is in obstacle, should not be valid ray
+                 Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
+                 if (collider != null)
+                 {
+                     Debug.Log("Ray start in obstacle");
+                     continue;
+                 }
+
+                 RaycastHit2D raycastHit;
+                 raycastHit = Physics2D.Raycast(rayStart, (Vector2)coverTarget.position - rayStart, r, obstacleMask.value);
+                 Debug.DrawRay(rayStart, (Vector2)coverTarget.position - rayStart, Color.gray, 5f);
+                 float DistanceToCover = Vector2.Distance(transform.position, raycastHit.point);
+                 if (raycastHit.collider != null && DistanceToCover <= maximumDistanceToCover && DistanceToCover < minDistance)
+                 {
+                     bFoundValidCoverSpot = true;
+                     targetPoint = raycastHit.point;
+                     minDistance = Vector2.Distance(transform.position, raycastHit.point);
+                 }
+             }
+             if (bFoundValidCoverSpot)
+             {
+                 CalculateNewPath(targetPoint);
+                 bIsTryingToHide = true;
+                 break;
+             }
+             else
+             {
+                 Debug.Log("No hiding spot found");
+                 hidingAttemptFinished?.Invoke();
+             }
+         }*/
+
+
+        Vector3 dir = coverTarget.position - transform.position;
+        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0,0,1));
+        perpendicular.Normalize();
+
+        float minDistance = Mathf.Infinity;
+        Vector2 targetPoint = Vector2.zero;
+        bool bFoundValidCoverSpot = false;
+        for (float d = -maxPerpendicularDistance; d <= maxPerpendicularDistance; d += coverRayIncrement)
         {
-            float minDistance = Mathf.Infinity;
-            Vector2 targetPoint = Vector2.zero;
-            bool bFoundValidCoverSpot = false;
-            for (int i = 0; i < raysPerCoverSphere; i++)
-            {
-                Quaternion vectorRotation = Quaternion.AngleAxis(angleIncrement * i, Vector3.forward);
-                Vector2 rayStart = coverTarget.position + (r * (vectorRotation * Vector2.right));
+            
+            Vector2 rayStart = (Vector2) transform.position + (d * (Vector2)perpendicular);
 
-                // If ray start is in obstacle, should not be valid ray
-                Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
-                if (collider != null)
-                {
-                    Debug.Log("Ray start in obstacle");
-                    continue;
-                }
+            Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
+            if (collider != null)
+            {
+                Debug.Log("Ray start in obstacle");
+                continue;
+            }
 
-                RaycastHit2D raycastHit;
-                raycastHit = Physics2D.Raycast(rayStart, (Vector2)coverTarget.position - rayStart, r, obstacleMask.value);
-                Debug.DrawRay(rayStart, (Vector2)coverTarget.position - rayStart, Color.gray, 5f);
-                float DistanceToCover = Vector2.Distance(transform.position, raycastHit.point);
-                if (raycastHit.collider != null && DistanceToCover <= maximumDistanceToCover && DistanceToCover < minDistance)
-                {
-                    bFoundValidCoverSpot = true;
-                    targetPoint = raycastHit.point;
-                    minDistance = Vector2.Distance(transform.position, raycastHit.point);
-                }
-            }
-            if (bFoundValidCoverSpot)
+            RaycastHit2D raycastHit;
+            Vector2 rayDir = (Vector2)coverTarget.position - rayStart;
+            raycastHit = Physics2D.Raycast(rayStart, rayDir, rayDir.magnitude, obstacleMask.value);
+            Debug.DrawRay(rayStart, (Vector2)coverTarget.position - rayStart, Color.gray, 5f);
+
+            float DistanceToCover = Vector2.Distance(transform.position, raycastHit.point);
+            if (raycastHit.collider != null && DistanceToCover <= maximumDistanceToCover && DistanceToCover < minDistance)
             {
-                CalculateNewPath(targetPoint);
-                bIsTryingToHide = true;
-                break;
+                bFoundValidCoverSpot = true;
+                targetPoint = raycastHit.point;
+                minDistance = Vector2.Distance(transform.position, raycastHit.point);
             }
-            else
-            {
-                Debug.Log("No hiding spot found");
-                hidingAttemptFinished?.Invoke();
-            }
+        }
+
+        if (bFoundValidCoverSpot)
+        {
+            CalculateNewPath(targetPoint);
+            bIsTryingToHide = true;
+        }
+        else
+        {
+            Debug.Log("No hiding spot found");
+            hidingAttemptFinished?.Invoke();
         }
 
     }
@@ -195,7 +242,16 @@ public class EnemyPathfinding : MonoBehaviour
             return;
         }
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(target, 0.5f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(target, 0.1f);
+
+        if(path != null)
+        {
+            Gizmos.color = Color.yellow;
+            foreach(Vector3 v3 in path.vectorPath)
+            {
+                Gizmos.DrawSphere(v3, 0.05f);
+            }
+        }
     }
 }

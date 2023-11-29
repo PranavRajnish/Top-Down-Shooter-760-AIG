@@ -33,7 +33,7 @@ public class EnemyShootingState : EnemyBaseState
     public override EnemyStateManager.EnemyState GetNextState()
     {
         if (_currentGun.BulletsRemaining <= 0)
-            return EnemyStateManager.EnemyState.Reloading;
+            return EnemyStateManager.EnemyState.Hiding;
         
         if (Perception.CanSeePlayer)
             return stateKey;
