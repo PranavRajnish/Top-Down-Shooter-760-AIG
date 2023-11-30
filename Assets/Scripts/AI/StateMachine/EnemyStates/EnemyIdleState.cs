@@ -25,6 +25,8 @@ public class EnemyIdleState : EnemyBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
+
         Pathfinding.reachedEndOfPath -= OnReachedEndOfPath;
     }
 

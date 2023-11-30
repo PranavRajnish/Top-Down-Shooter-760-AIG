@@ -12,5 +12,9 @@ namespace AI.StateMachine.EnemyStates
             this.stateManager = stateManager;
             Enemy = this.stateManager.gameObject.GetComponent<Enemy>();
         }
+        public override void ExitState()
+        {
+            stateManager.previousState = StateKey;
+        }
     }
 }

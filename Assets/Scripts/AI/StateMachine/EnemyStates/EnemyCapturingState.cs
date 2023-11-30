@@ -33,6 +33,8 @@ public class EnemyCapturingState : EnemyBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
+
         Pathfinding.StopCalculatingPath();
     }
 

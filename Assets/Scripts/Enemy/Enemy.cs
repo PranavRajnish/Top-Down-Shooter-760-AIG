@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
 
     public DEnemyDestroyed EnemyDestroyed;
 
-    [SerializeField] private Gun currentGun;
+    public Gun currentGun;
 
     public Gun CurrentGun => currentGun;
 

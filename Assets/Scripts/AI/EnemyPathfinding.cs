@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using Unity.VisualScripting;
 
 public class EnemyPathfinding : MonoBehaviour
 {
@@ -10,12 +12,7 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private Transform EnemySprite;
     [SerializeField] private Vector3 TargetPosition;
 
-    [Header("Cover finding properties")] [SerializeField]
-    private float initialCoverSphereRadius = 4f;
-
-    [SerializeField] private float maximumCoverSphereRadius = 12f;
-    [SerializeField] private float coverSphereRadiusIncrement = 4f;
-    [SerializeField] private int raysPerCoverSphere = 12;
+    [Header("Cover finding properties")]
     [SerializeField] private float maxPerpendicularDistance = 6f;
     [SerializeField] private float coverRayIncrement = 2f;
     [SerializeField] private float maximumDistanceToCover = 10f;
@@ -150,7 +147,7 @@ public class EnemyPathfinding : MonoBehaviour
 
 
         Vector3 dir = coverTarget.position - transform.position;
-        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0, 0, 1));
+        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0,0,1));
         perpendicular.Normalize();
 
         float minDistance = Mathf.Infinity;
@@ -158,7 +155,8 @@ public class EnemyPathfinding : MonoBehaviour
         bool bFoundValidCoverSpot = false;
         for (float d = -maxPerpendicularDistance; d <= maxPerpendicularDistance; d += coverRayIncrement)
         {
-            Vector2 rayStart = (Vector2)transform.position + (d * (Vector2)perpendicular);
+            
+            Vector2 rayStart = (Vector2) transform.position + (d * (Vector2)perpendicular);
 
             Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
             if (collider != null)
@@ -246,10 +244,10 @@ public class EnemyPathfinding : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(target, 0.1f);
 
-        if (path != null)
+        if(path != null)
         {
             Gizmos.color = Color.yellow;
-            foreach (Vector3 v3 in path.vectorPath)
+            foreach(Vector3 v3 in path.vectorPath)
             {
                 Gizmos.DrawSphere(v3, 0.05f);
             }

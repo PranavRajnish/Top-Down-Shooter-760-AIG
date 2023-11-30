@@ -9,15 +9,12 @@ namespace AI.StateMachine.EnemyStates
         private Transform Transform => stateManager.transform;
 
         private readonly CharacterDefenseStats _defenseStats;
-        private bool _isStrafing;
-
         private Gun CurrentGun => Enemy.CurrentGun;
 
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
-            _isStrafing = false;
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-            Perception.player.GetComponent<Rigidbody2D>();
+           // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
         }
 
         public override void ExitState()
@@ -30,7 +27,10 @@ namespace AI.StateMachine.EnemyStates
 
         public override EnemyStateManager.EnemyState GetNextState()
         {
-            if (CurrentGun.NormalizedBulletsRemaining <= 0.3f || _defenseStats.NormalizedHealth <= 0.6f)
+            if (CurrentGun.BulletsRemaining <= 0)
+                return EnemyStateManager.EnemyState.Reloading;
+            
+            if (_defenseStats.NormalizedHealth <= 0.6f)
                 return EnemyStateManager.EnemyState.Hiding;
 
             if (Perception.CanSeePlayer)
@@ -82,8 +82,6 @@ namespace AI.StateMachine.EnemyStates
                         var strafePoint = (Vector2)Transform.position + meanDirection * 3.5f;
                         Pathfinding.Strafe(strafePoint);
                     }
-                    break;
-                default:
                     break;
             }
         }
