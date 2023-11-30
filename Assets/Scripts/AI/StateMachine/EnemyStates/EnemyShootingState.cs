@@ -15,7 +15,7 @@ namespace AI.StateMachine.EnemyStates
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-            _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
+           // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
         }
 
         public override void ExitState()
@@ -28,8 +28,8 @@ namespace AI.StateMachine.EnemyStates
 
         public override EnemyStateManager.EnemyState GetNextState()
         {
-            if (CurrentGun.NormalizedBulletsRemaining <= 0.3f || _defenseStats.NormalizedHealth <= 0.6f)
-                return EnemyStateManager.EnemyState.Hiding;
+            if (CurrentGun.BulletsRemaining <= 0)
+                return EnemyStateManager.EnemyState.Reloading;
 
             if (Perception.CanSeePlayer)
                 return StateKey;
@@ -46,14 +46,14 @@ namespace AI.StateMachine.EnemyStates
 
                 CurrentGun.OnTriggerPulled();
 
-                if (CurrentGun is ARGun)
+                /*if (CurrentGun is ARGun)
                 {
                     Vector2 playerVelocity = _playerRigidbody.velocity;
                     if (_playerRigidbody && playerVelocity.sqrMagnitude > 1f)
                     {
                         Pathfinding.CalculateNewPath((Vector2)stateManager.transform.position + playerVelocity.normalized);
                     }
-                }
+                }*/
             }
 
             if (CurrentGun.CurrentFireMode != FireMode.Auto)

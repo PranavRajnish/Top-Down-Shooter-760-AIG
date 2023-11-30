@@ -25,6 +25,8 @@ public class EnemyHidingState : EnemyBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
+
         Pathfinding.hidingAttemptFinished -= OnHidingAttemptFinished;
     }
 
@@ -32,7 +34,7 @@ public class EnemyHidingState : EnemyBaseState
     {     
         if(bHidingAttemptFinished)
         {
-            return EnemyStateManager.EnemyState.Reloading;
+            return stateManager.previousState;
         }
 
         return StateKey;

@@ -19,6 +19,7 @@ namespace AI.StateMachine.EnemyStates
 
         public override void ExitState()
         {
+            stateManager.previousState = StateKey;
         }
 
         public override void UpdateState()
