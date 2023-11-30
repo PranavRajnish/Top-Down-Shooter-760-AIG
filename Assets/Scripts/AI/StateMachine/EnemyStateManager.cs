@@ -34,7 +34,9 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     public PolygonCollider2D BaseCollider => baseCollider;
     public Gun currentGun;
 
+    public EnemyState previousState;
     public bool gotHit;
+
 
     
     private float distanceFromPlayer;

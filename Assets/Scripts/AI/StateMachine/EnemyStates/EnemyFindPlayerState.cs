@@ -25,6 +25,8 @@ public class EnemyFindPlayerState : EnemyBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
+
         Pathfinding.StopCalculatingPath();
     }
 

@@ -13,10 +13,6 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private Vector3 TargetPosition;
 
     [Header("Cover finding properties")]
-    [SerializeField] private float initialCoverSphereRadius = 4f;
-    [SerializeField] private float maximumCoverSphereRadius = 12f;
-    [SerializeField] private float coverSphereRadiusIncrement = 4f;
-    [SerializeField] private int raysPerCoverSphere = 12;
     [SerializeField] private float maxPerpendicularDistance = 6f;
     [SerializeField] private float coverRayIncrement = 2f;
     [SerializeField] private float maximumDistanceToCover = 10f;
