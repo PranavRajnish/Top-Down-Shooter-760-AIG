@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-using Unity.VisualScripting;
 
 public class EnemyPathfinding : MonoBehaviour
 {
@@ -12,8 +10,9 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private Transform EnemySprite;
     [SerializeField] private Vector3 TargetPosition;
 
-    [Header("Cover finding properties")]
-    [SerializeField] private float initialCoverSphereRadius = 4f;
+    [Header("Cover finding properties")] [SerializeField]
+    private float initialCoverSphereRadius = 4f;
+
     [SerializeField] private float maximumCoverSphereRadius = 12f;
     [SerializeField] private float coverSphereRadiusIncrement = 4f;
     [SerializeField] private int raysPerCoverSphere = 12;
@@ -23,6 +22,7 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
 
     public delegate void DHidingAttemptFinished();
+
     public DHidingAttemptFinished hidingAttemptFinished;
 
     private bool bIsTryingToHide = false;
@@ -33,6 +33,7 @@ public class EnemyPathfinding : MonoBehaviour
     bool bIsPathfinding = false;
 
     public delegate void DReachedEndOfPath();
+
     public DReachedEndOfPath reachedEndOfPath;
 
 
@@ -44,18 +45,20 @@ public class EnemyPathfinding : MonoBehaviour
         {
             if (!_seeker)
                 _seeker = GetComponent<Seeker>();
-            
+
             return _seeker;
         }
     }
 
 
-    private Rigidbody2D rb;
+    private Rigidbody2D _rigidbody;
+
+    private Coroutine _strafingCoroutine;
 
     // Start is called before the first frame update
     void Start()
     {
-        //rb = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -147,7 +150,7 @@ public class EnemyPathfinding : MonoBehaviour
 
 
         Vector3 dir = coverTarget.position - transform.position;
-        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0,0,1));
+        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0, 0, 1));
         perpendicular.Normalize();
 
         float minDistance = Mathf.Infinity;
@@ -155,8 +158,7 @@ public class EnemyPathfinding : MonoBehaviour
         bool bFoundValidCoverSpot = false;
         for (float d = -maxPerpendicularDistance; d <= maxPerpendicularDistance; d += coverRayIncrement)
         {
-            
-            Vector2 rayStart = (Vector2) transform.position + (d * (Vector2)perpendicular);
+            Vector2 rayStart = (Vector2)transform.position + (d * (Vector2)perpendicular);
 
             Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
             if (collider != null)
@@ -189,7 +191,6 @@ public class EnemyPathfinding : MonoBehaviour
             Debug.Log("No hiding spot found");
             hidingAttemptFinished?.Invoke();
         }
-
     }
 
     public void CalculateNewPath(Vector2 targetPoint)
@@ -245,13 +246,44 @@ public class EnemyPathfinding : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(target, 0.1f);
 
-        if(path != null)
+        if (path != null)
         {
             Gizmos.color = Color.yellow;
-            foreach(Vector3 v3 in path.vectorPath)
+            foreach (Vector3 v3 in path.vectorPath)
             {
                 Gizmos.DrawSphere(v3, 0.05f);
             }
+        }
+
+        if (_strafingCoroutine != null)
+        {
+            Gizmos.DrawSphere(_strafePoint, 0.05f);
+        }
+    }
+
+    private Vector2 _strafePoint;
+
+    public void Strafe(Vector2 destination)
+    {
+        if (_strafingCoroutine != null)
+            StopCoroutine(_strafingCoroutine);
+
+        _strafingCoroutine = StartCoroutine(StrafeRoutine(destination));
+    }
+
+    private IEnumerator StrafeRoutine(Vector2 destination)
+    {
+        StopCalculatingPath();
+        Debug.Log("I'm strafing!!!!");
+        var startTime = Time.time;
+        var speed = Random.Range(3f, 5f);
+        var direction = destination - (Vector2)transform.position;
+        direction.Normalize();
+
+        while (Vector2.Distance(transform.position, destination) > 0.25f || Time.time - startTime > 3f)
+        {
+            _rigidbody.velocity = speed * direction;
+            yield return null;
         }
     }
 }

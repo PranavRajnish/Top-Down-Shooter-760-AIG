@@ -24,6 +24,10 @@ namespace AI.StateMachine
         {
         }
 
+        public virtual void FixedUpdateState()
+        {
+        }
+
         public abstract TState GetNextState();
 
         public virtual void OnTriggerEnter(Collider2D other)

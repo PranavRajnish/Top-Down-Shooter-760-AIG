@@ -1,46 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using AI.StateMachine.EnemyStates;
-using UnityEngine;
 using Weapons;
 
-public class EnemyReloadingState : EnemyBaseState
+namespace AI.StateMachine.EnemyStates
 {
-    private Gun _currentGun;
-    public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
-
-    public override void EnterState()
+    public class EnemyReloadingState : EnemyBaseState
     {
-        _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
-        _currentGun.OnReloadPressed();
+        private Gun CurrentGun => Enemy.CurrentGun;
+        public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
 
-    }
+        public override void EnterState()
+        {
+            CurrentGun.OnReloadPressed();
+        }
 
-    public override void ExitState()
-    {
+        public override EnemyStateManager.EnemyState GetNextState()
+        {
+            if (CurrentGun.BulletsRemaining <= 0)
+                return StateKey;
 
-    }
+            if (Perception.CanSeePlayer)
+                return EnemyStateManager.EnemyState.Shooting;
 
-    public override EnemyStateManager.EnemyState GetNextState()
-    {
-        if (_currentGun.BulletsRemaining <= 0)
-            return StateKey;
-
-        if (Perception.CanSeePlayer)
-            return EnemyStateManager.EnemyState.Shooting;
-
-        return EnemyStateManager.EnemyState.FindPlayer;
-    }
-
-    public override void OnTriggerEnter(Collider2D other)
-    {
-    }
-
-    public override void OnTriggerExit(Collider2D other)
-    {
-    }
-
-    public override void OnTriggerStay(Collider2D other)
-    {
+            return EnemyStateManager.EnemyState.FindPlayer;
+        }
     }
 }
