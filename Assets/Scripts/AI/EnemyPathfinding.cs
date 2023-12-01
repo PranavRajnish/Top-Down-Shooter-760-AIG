@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-using Unity.VisualScripting;
+using Random = UnityEngine.Random;
 
 public class EnemyPathfinding : MonoBehaviour
 {
@@ -12,8 +12,9 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private Transform EnemySprite;
     [SerializeField] private Vector3 TargetPosition;
 
-    [Header("Cover finding properties")]
-    [SerializeField] private float maxPerpendicularDistance = 6f;
+    [Header("Cover finding properties")] [SerializeField]
+    private float maxPerpendicularDistance = 6f;
+
     [SerializeField] private float coverRayIncrement = 2f;
     [SerializeField] private float maximumDistanceToCover = 10f;
     [SerializeField] private LayerMask obstacleMask;
@@ -67,6 +68,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (currentWaypoint >= path.vectorPath.Count)
         {
             ReachedEndOfPath = true;
+            _rigidbody.velocity = Vector2.zero;
             reachedEndOfPath?.Invoke();
 
             if (bIsTryingToHide)
@@ -77,27 +79,20 @@ public class EnemyPathfinding : MonoBehaviour
 
             return;
         }
-        else
-        {
-            ReachedEndOfPath = false;
-        }
 
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - (Vector2)transform.position).normalized;
-        Vector2 velocity = direction.normalized * (speed * Time.deltaTime);
+        ReachedEndOfPath = false;
 
-        FaceTarget(velocity);
-        //FaceTarget((Vector3)target - transform.position);
+        var nextWaypointPos = (Vector2)path.vectorPath[currentWaypoint];
+        var currentPos = (Vector2)transform.position;
+        
+        var direction = (nextWaypointPos - currentPos).normalized;
+        
+        FaceTarget(direction);
 
-        float distance = Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]);
-        if (distance < nextWaypointDistance)
-        {
+        if (Vector2.Distance(nextWaypointPos, currentPos) < 0.25f)
             currentWaypoint++;
-        }
 
-        //rb.AddForce(velocity); 
-        float newX = transform.position.x + velocity.x * Time.deltaTime;
-        float newY = transform.position.y + velocity.y * Time.deltaTime;
-        transform.position = new Vector2(newX, newY);
+        _rigidbody.velocity = speed * direction;
     }
 
     public void FindCover(Transform coverTarget)
@@ -147,7 +142,7 @@ public class EnemyPathfinding : MonoBehaviour
 
 
         Vector3 dir = coverTarget.position - transform.position;
-        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0,0,1));
+        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0, 0, 1));
         perpendicular.Normalize();
 
         float minDistance = Mathf.Infinity;
@@ -155,8 +150,7 @@ public class EnemyPathfinding : MonoBehaviour
         bool bFoundValidCoverSpot = false;
         for (float d = -maxPerpendicularDistance; d <= maxPerpendicularDistance; d += coverRayIncrement)
         {
-            
-            Vector2 rayStart = (Vector2) transform.position + (d * (Vector2)perpendicular);
+            Vector2 rayStart = (Vector2)transform.position + (d * (Vector2)perpendicular);
 
             Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
             if (collider != null)
@@ -225,11 +219,11 @@ public class EnemyPathfinding : MonoBehaviour
         }
     }
 
-    private void FaceTarget(Vector3 velocity)
+    private void FaceTarget(Vector3 direction)
     {
-        if (velocity.magnitude > 0)
+        if (direction.magnitude > 0)
         {
-            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
     }
@@ -244,22 +238,18 @@ public class EnemyPathfinding : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(target, 0.1f);
 
-        if(path != null)
+        if (path != null)
         {
             Gizmos.color = Color.yellow;
-            foreach(Vector3 v3 in path.vectorPath)
+            foreach (Vector3 v3 in path.vectorPath)
             {
                 Gizmos.DrawSphere(v3, 0.05f);
             }
         }
-
-        if (_strafingCoroutine != null)
-        {
-            Gizmos.DrawSphere(_strafePoint, 0.05f);
-        }
     }
 
-    private Vector2 _strafePoint;
+    public bool IsStrafing => _strafingCoroutine != null;
+    [SerializeField] private float stationaryTolerance = 0.005f;
 
     public void Strafe(Vector2 destination)
     {
@@ -269,19 +259,22 @@ public class EnemyPathfinding : MonoBehaviour
         _strafingCoroutine = StartCoroutine(StrafeRoutine(destination));
     }
 
-    private IEnumerator StrafeRoutine(Vector2 destination)
+    private IEnumerator StrafeRoutine(Vector2 plane)
     {
         StopCalculatingPath();
         Debug.Log("I'm strafing!!!!");
-        var startTime = Time.time;
-        var speed = Random.Range(3f, 5f);
-        var direction = destination - (Vector2)transform.position;
-        direction.Normalize();
+        var startTime = DateTime.Now;
+        var randomTime = Random.Range(0f, 1.5f);
+        plane.Normalize();
+        if (Random.Range(0, 1) == 0)
+            plane = -plane;
 
-        while (Vector2.Distance(transform.position, destination) > 0.25f || Time.time - startTime > 3f)
+        do
         {
-            _rigidbody.velocity = speed * direction;
+            _rigidbody.velocity = speed * plane;
             yield return null;
-        }
+        } while ((DateTime.Now - startTime).Seconds > randomTime || _rigidbody.velocity.sqrMagnitude < stationaryTolerance);
+
+        _strafingCoroutine = null;
     }
 }

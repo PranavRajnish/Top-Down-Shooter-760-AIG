@@ -14,7 +14,7 @@ namespace AI.StateMachine.EnemyStates
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-           // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
+            // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
         }
 
         public override void ExitState()
@@ -30,7 +30,7 @@ namespace AI.StateMachine.EnemyStates
             if (CurrentGun.BulletsRemaining <= 0)
                 return EnemyStateManager.EnemyState.Reloading;
             
-            if (_defenseStats.NormalizedHealth <= 0.6f)
+            if (_defenseStats.NormalizedHealth <= 0.3f)
                 return EnemyStateManager.EnemyState.Hiding;
 
             if (Perception.CanSeePlayer)
@@ -56,32 +56,13 @@ namespace AI.StateMachine.EnemyStates
         public override void FixedUpdateState()
         {
             if (!Perception.CanSeePlayer) return;
+            if (Pathfinding.IsStrafing) return;
 
             switch (CurrentGun)
             {
                 case ARGun:
                 case Pistol:
-                    var bullets = Perception.GetBullets();
-                    if (bullets.Length > 0)
-                    {
-                        var meanDirection = Vector2.zero;
-                        var meanPosition = Vector2.zero;
-
-                        foreach (var bullet in bullets)
-                        {
-                            meanDirection += (Vector2)bullet.right;
-                            meanPosition += (Vector2)bullet.position;
-                        }
-
-                        meanDirection /= bullets.Length;
-                        meanPosition /= bullets.Length;
-
-                        if (Vector2.SignedAngle(Transform.position, meanPosition) < 0)
-                            meanDirection = -meanDirection;
-
-                        var strafePoint = (Vector2)Transform.position + meanDirection * 3.5f;
-                        Pathfinding.Strafe(strafePoint);
-                    }
+                    Pathfinding.Strafe(Vector2.Perpendicular((Perception.player.transform.position - Transform.position).normalized));
                     break;
             }
         }
