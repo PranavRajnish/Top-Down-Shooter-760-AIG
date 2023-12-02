@@ -284,8 +284,8 @@ public class EnemyPathfinding : MonoBehaviour
 
     private IEnumerator StrafeRoutine(Vector2 plane)
     {
-        StopCalculatingPath();
         Debug.Log("I'm strafing!!!!");
+        StopCalculatingPath();
         var startTime = DateTime.Now;
         var randomTime = Random.Range(0f, 1.5f);
         _strafePlane = plane;
@@ -300,5 +300,29 @@ public class EnemyPathfinding : MonoBehaviour
         } while ((DateTime.Now - startTime).Seconds > randomTime || _rigidbody.velocity.sqrMagnitude < stationaryTolerance);
 
         _strafingCoroutine = null;
+    }
+
+    private Coroutine _moveCoroutine;
+
+    public void MoveTo(Vector2 point)
+    {
+        if (_moveCoroutine != null)
+            StopCoroutine(_moveCoroutine);
+
+        _moveCoroutine = StartCoroutine(MoveCoroutine(point));
+    }
+
+    private IEnumerator MoveCoroutine(Vector2 point)
+    {
+        Debug.Log("I'm Moving!!!!");
+        var direction = (point - (Vector2)transform.position).normalized;
+        while (Vector2.Distance(point, transform.position) > 0.25f)
+        {
+            _rigidbody.velocity = direction * (speed * 0.75f);
+            yield return null;
+        }
+
+        transform.position = point;
+        _moveCoroutine = null;
     }
 }

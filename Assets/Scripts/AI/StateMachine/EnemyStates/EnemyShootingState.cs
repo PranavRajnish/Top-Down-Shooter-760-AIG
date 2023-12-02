@@ -1,4 +1,3 @@
-using System;
 using Player;
 using UnityEngine;
 using Weapons;
@@ -11,20 +10,31 @@ namespace AI.StateMachine.EnemyStates
 
         private readonly CharacterDefenseStats _defenseStats;
         private Gun CurrentGun => Enemy.CurrentGun;
+        private float ChangeInHealth => _healthWhileEntering - _defenseStats.NormalizedHealth;
 
-        private DateTime _lastHidingTime;
+        private float _healthWhileEntering;
+
+        private const float MinPistolDistance = 1f, MaxPistolDistance = 3.33f;
+        private const float MinARDistance = 3f, MaxARDistance = 6.33f;
+        private const float MinSniperDistance = 5f, MaxSniperDistance = 7.33f;
 
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-            _lastHidingTime = DateTime.MinValue;
+        }
+
+        public override void EnterState()
+        {
+            base.EnterState();
+
+            _healthWhileEntering = _defenseStats.NormalizedHealth;
         }
 
         public override void ExitState()
         {
             base.ExitState();
-            
-            if(Pathfinding.IsStrafing)
+
+            if (Pathfinding.IsStrafing)
                 Pathfinding.StopStrafing();
 
             if (CurrentGun)
@@ -35,10 +45,9 @@ namespace AI.StateMachine.EnemyStates
         {
             if (CurrentGun.BulletsRemaining <= 0)
                 return EnemyStateManager.EnemyState.Reloading;
-            
-            if (_defenseStats.NormalizedHealth <= 0.3f && (DateTime.Now - _lastHidingTime).Seconds > 5f)
+
+            if (ChangeInHealth > 0.5f)
             {
-                _lastHidingTime = DateTime.Now;
                 return EnemyStateManager.EnemyState.Hiding;
             }
 
@@ -65,14 +74,38 @@ namespace AI.StateMachine.EnemyStates
         public override void FixedUpdateState()
         {
             if (!Perception.CanSeePlayer) return;
-            if (Pathfinding.IsStrafing) return;
 
-            switch (CurrentGun)
+            var distanceToPlayer = Vector2.Distance(Transform.position, Perception.player.transform.position);
+            if (distanceToPlayer is <= MinPistolDistance or >= MaxPistolDistance)
             {
-                case ARGun:
-                case Pistol:
-                    Pathfinding.Strafe(Vector2.Perpendicular((Perception.player.transform.position - Transform.position).normalized));
-                    break;
+                float minDistance = MinPistolDistance, maxDistance = MaxPistolDistance;
+                switch (CurrentGun)
+                {
+                    case ARGun:
+                        minDistance = MinARDistance;
+                        maxDistance = MaxARDistance;
+                        break;
+                    case Sniper:
+                        minDistance = MinSniperDistance;
+                        maxDistance = MaxSniperDistance;
+                        break;
+                }
+
+                var direction = -(Perception.player.transform.position - Transform.position).normalized;
+                var randomValidDistance = Random.Range(minDistance, maxDistance) - distanceToPlayer;
+
+                var pointToMoveAt = Transform.position + direction * randomValidDistance;
+                Pathfinding.MoveTo(pointToMoveAt);
+            }
+            else if (ChangeInHealth > 0.05f && !Pathfinding.IsStrafing)
+            {
+                switch (CurrentGun)
+                {
+                    case ARGun:
+                    case Pistol:
+                        Pathfinding.Strafe(Vector2.Perpendicular((Perception.player.transform.position - Transform.position).normalized));
+                        break;
+                }
             }
         }
     }
