@@ -8,7 +8,7 @@ namespace Weapons
         public override GunType Type => GunType.Knife;
         public override FireMode[] FireModes => new[] { FireMode.Single };
 
-        private const float MinFireRate = 0.3f;
+        private const float MinFireRate = 0.5f;
         private float _lastShootTime = float.MinValue;
 
         protected override IEnumerator Fire()

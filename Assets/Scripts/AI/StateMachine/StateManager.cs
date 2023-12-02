@@ -8,6 +8,7 @@ namespace AI.StateMachine
     {
         protected readonly Dictionary<TState, BaseState<TState>> States = new();
         protected BaseState<TState> CurrentState;
+        [SerializeField] private TState currentStateKey;
 
         private bool _isTransitioningState;
 
@@ -37,6 +38,7 @@ namespace AI.StateMachine
             _isTransitioningState = true;
             CurrentState.ExitState();
             CurrentState = States[nextStateKey];
+            currentStateKey = nextStateKey;
             CurrentState.EnterState();
             _isTransitioningState = false;
         }
