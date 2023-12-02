@@ -1885,6 +1885,7 @@ MonoBehaviour:
   baseCollider: {fileID: 291157273}
   player: {fileID: 1831074496}
   waveText: {fileID: 807267108}
+  debugModeOn: 1
   currentWave: 1
   enemiesToSpawn: 0
 --- !u!4 &1091510420
@@ -77967,6 +77968,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 152981525468386745, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: debugStateOn
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4398711083707854216, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.25
@@ -78019,6 +78024,10 @@ PrefabInstance:
       propertyPath: baseCollider
       value: 
       objectReference: {fileID: 291157273}
+    - target: {fileID: 9178881375875192692, guid: 488bb91d05fbe1340a06d9ab076645b1, type: 3}
+      propertyPath: debugStateOn
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

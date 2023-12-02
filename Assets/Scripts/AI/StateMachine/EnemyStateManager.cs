@@ -38,8 +38,8 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
     public EnemyState previousState;
     public bool gotHit;
 
+    public bool debugStateOn = false;
 
-    
     private float distanceFromPlayer;
 
     private void Start()
@@ -94,5 +94,10 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
         }
 
         distanceFromPlayer = Perception.GetSightDistance() - 1;
+    }
+
+    public string GetCurrentState()
+    {
+        return CurrentState.ToString();
     }
 }

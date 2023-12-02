@@ -15,6 +15,8 @@ public class WaveManager : MonoBehaviour
     GameObject player;
     [SerializeField]
     private TextMeshProUGUI waveText;
+    [SerializeField]
+    private bool debugModeOn = false;
 
     public int currentWave = 1;
     public int enemiesToSpawn;
@@ -48,6 +50,12 @@ public class WaveManager : MonoBehaviour
             if(enemyComponent != null )
             {
                 enemyComponent.EnemyDestroyed += OnEnemyDestroyed;
+            }
+
+            EnemyStateManager enemyStateManager = enemyInstance.GetComponent<EnemyStateManager>();
+            if(enemyStateManager != null )
+            {
+                enemyStateManager.debugStateOn = debugModeOn;
             }
         }
     }
