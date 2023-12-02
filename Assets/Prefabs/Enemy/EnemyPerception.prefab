@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fovAngle: 45
   sightDistance: 8
-  player: {fileID: 0}
   sightObstacles:
     serializedVersion: 2
     m_Bits: 64
+  player: {fileID: 0}
