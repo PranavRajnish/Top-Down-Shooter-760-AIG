@@ -84,9 +84,9 @@ public class EnemyPathfinding : MonoBehaviour
 
         var nextWaypointPos = (Vector2)path.vectorPath[currentWaypoint];
         var currentPos = (Vector2)transform.position;
-        
+
         var direction = (nextWaypointPos - currentPos).normalized;
-        
+
         FaceTarget(direction);
 
         if (Vector2.Distance(nextWaypointPos, currentPos) < 0.25f)
@@ -228,6 +228,11 @@ public class EnemyPathfinding : MonoBehaviour
         }
     }
 
+    private void FaceTarget(Transform target)
+    {
+        transform.LookAt(target);
+    }
+
     private void OnDrawGizmos()
     {
         if (!bIsPathfinding)
@@ -246,17 +251,35 @@ public class EnemyPathfinding : MonoBehaviour
                 Gizmos.DrawSphere(v3, 0.05f);
             }
         }
+
+        if (IsStrafing)
+        {
+            var position = transform.position;
+            var a = (Vector2)position + _strafePlane * 3;
+            var b = (Vector2)position + _strafePlane * -3;
+
+            Gizmos.color = Color.black;
+            Gizmos.DrawLine(a, b);
+        }
     }
 
     public bool IsStrafing => _strafingCoroutine != null;
     [SerializeField] private float stationaryTolerance = 0.005f;
 
+    private Vector2 _strafePlane;
+
     public void Strafe(Vector2 destination)
     {
-        if (_strafingCoroutine != null)
-            StopCoroutine(_strafingCoroutine);
-
+        StopStrafing();
         _strafingCoroutine = StartCoroutine(StrafeRoutine(destination));
+    }
+
+    public void StopStrafing()
+    {
+        if (!IsStrafing) return;
+
+        StopCoroutine(_strafingCoroutine);
+        _strafingCoroutine = null;
     }
 
     private IEnumerator StrafeRoutine(Vector2 plane)
@@ -265,13 +288,14 @@ public class EnemyPathfinding : MonoBehaviour
         Debug.Log("I'm strafing!!!!");
         var startTime = DateTime.Now;
         var randomTime = Random.Range(0f, 1.5f);
+        _strafePlane = plane;
         plane.Normalize();
         if (Random.Range(0, 1) == 0)
             plane = -plane;
 
         do
         {
-            _rigidbody.velocity = speed * plane;
+            _rigidbody.velocity = plane * (speed * 0.75f);
             yield return null;
         } while ((DateTime.Now - startTime).Seconds > randomTime || _rigidbody.velocity.sqrMagnitude < stationaryTolerance);
 

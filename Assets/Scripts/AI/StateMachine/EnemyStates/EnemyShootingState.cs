@@ -1,3 +1,4 @@
+using System;
 using Player;
 using UnityEngine;
 using Weapons;
@@ -11,15 +12,20 @@ namespace AI.StateMachine.EnemyStates
         private readonly CharacterDefenseStats _defenseStats;
         private Gun CurrentGun => Enemy.CurrentGun;
 
+        private DateTime _lastHidingTime;
+
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-            // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
+            _lastHidingTime = DateTime.MinValue;
         }
 
         public override void ExitState()
         {
             base.ExitState();
+            
+            if(Pathfinding.IsStrafing)
+                Pathfinding.StopStrafing();
 
             if (CurrentGun)
                 CurrentGun.OnTriggerReleased();
@@ -30,8 +36,11 @@ namespace AI.StateMachine.EnemyStates
             if (CurrentGun.BulletsRemaining <= 0)
                 return EnemyStateManager.EnemyState.Reloading;
             
-            if (_defenseStats.NormalizedHealth <= 0.3f)
+            if (_defenseStats.NormalizedHealth <= 0.3f && (DateTime.Now - _lastHidingTime).Seconds > 5f)
+            {
+                _lastHidingTime = DateTime.Now;
                 return EnemyStateManager.EnemyState.Hiding;
+            }
 
             if (Perception.CanSeePlayer)
                 return StateKey;

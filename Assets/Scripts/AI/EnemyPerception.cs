@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 namespace AI
@@ -87,17 +86,6 @@ namespace AI
         public float GetSightDistance()
         {
             return sightDistance;
-        }
-
-        public Transform[] GetBullets()
-        {
-            var ownerPosition = _parent.position;
-            var center = (Vector2)(_parent.forward * _yOffset + ownerPosition);
-            var angle = Vector2.SignedAngle(ownerPosition, center);
-
-            return Physics2D.OverlapBoxAll(center, _bulletPerceptionBoxSize, angle).Where(collider => collider.gameObject.CompareTag("Bullet"))
-                .Select(collider => collider.transform).Where(transform => Physics2D.Raycast(transform.position, transform.forward).transform == transform)
-                .ToArray();
         }
     }
 }
