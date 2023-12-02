@@ -15,7 +15,14 @@ namespace Player
 
         public float NormalizedHealth => (health + armor) / MaxPlayerHealth;
 
+        public float NormalizedHealthOnly => health/MaxPlayerHealth;
+        public float NormalizedArmor => armor/MaxPlayerArmor;
+
         public event Action OnCharacterHit;
+
+        public event Action OnCharacterStatUpdate;
+
+        public bool IsPlayer { get { return isPlayer; } }
 
         public void OnDamageDealt(Bullet bullet)
         {
@@ -40,6 +47,19 @@ namespace Player
             }
             
             OnCharacterHit?.Invoke();
+            OnCharacterStatUpdate?.Invoke();
+        }
+
+        public void AddHealth(float amt)
+        {
+            health += amt;
+            OnCharacterStatUpdate?.Invoke();
+        }
+
+        public void AddArmor(float amt)
+        {
+            armor += amt;
+            OnCharacterStatUpdate?.Invoke();
         }
     }
 
