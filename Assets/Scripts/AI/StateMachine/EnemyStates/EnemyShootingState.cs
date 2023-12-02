@@ -1,3 +1,4 @@
+using System;
 using Player;
 using UnityEngine;
 using Weapons;
@@ -7,20 +8,24 @@ namespace AI.StateMachine.EnemyStates
     public class EnemyShootingState : EnemyBaseState
     {
         private Transform Transform => stateManager.transform;
-    
-        private readonly Rigidbody _playerRigidbody;
+
         private readonly CharacterDefenseStats _defenseStats;
         private Gun CurrentGun => Enemy.CurrentGun;
+
+        private DateTime _lastHidingTime;
 
         public EnemyShootingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
         {
             _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
-           // _playerRigidbody = Perception.player.GetComponent<Rigidbody>();
+            _lastHidingTime = DateTime.MinValue;
         }
 
         public override void ExitState()
         {
             base.ExitState();
+            
+            if(Pathfinding.IsStrafing)
+                Pathfinding.StopStrafing();
 
             if (CurrentGun)
                 CurrentGun.OnTriggerReleased();
@@ -30,6 +35,12 @@ namespace AI.StateMachine.EnemyStates
         {
             if (CurrentGun.BulletsRemaining <= 0)
                 return EnemyStateManager.EnemyState.Reloading;
+            
+            if (_defenseStats.NormalizedHealth <= 0.3f && (DateTime.Now - _lastHidingTime).Seconds > 5f)
+            {
+                _lastHidingTime = DateTime.Now;
+                return EnemyStateManager.EnemyState.Hiding;
+            }
 
             if (Perception.CanSeePlayer)
                 return StateKey;
@@ -45,19 +56,24 @@ namespace AI.StateMachine.EnemyStates
                 Transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg));
 
                 CurrentGun.OnTriggerPulled();
-
-                /*if (CurrentGun is ARGun)
-                {
-                    Vector2 playerVelocity = _playerRigidbody.velocity;
-                    if (_playerRigidbody && playerVelocity.sqrMagnitude > 1f)
-                    {
-                        Pathfinding.CalculateNewPath((Vector2)stateManager.transform.position + playerVelocity.normalized);
-                    }
-                }*/
             }
 
             if (CurrentGun.CurrentFireMode != FireMode.Auto)
                 CurrentGun.OnTriggerReleased();
+        }
+
+        public override void FixedUpdateState()
+        {
+            if (!Perception.CanSeePlayer) return;
+            if (Pathfinding.IsStrafing) return;
+
+            switch (CurrentGun)
+            {
+                case ARGun:
+                case Pistol:
+                    Pathfinding.Strafe(Vector2.Perpendicular((Perception.player.transform.position - Transform.position).normalized));
+                    break;
+            }
         }
     }
 }

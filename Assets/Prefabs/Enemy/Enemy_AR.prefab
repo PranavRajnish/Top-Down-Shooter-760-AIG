@@ -203,6 +203,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 64
+  stationaryTolerance: 0.005
 --- !u!114 &9178881375875192692
 MonoBehaviour:
   m_ObjectHideFlags: 0
