@@ -6,7 +6,7 @@ using UnityEngine;
 public class WaveManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject enemyPrefab;
+    private List<GameObject> enemyPrefabs;
     [SerializeField]
     private List<Transform> transforms = new List<Transform>();
     [SerializeField]
@@ -34,8 +34,9 @@ public class WaveManager : MonoBehaviour
 
         for(int i = 0; i < enemiesToSpawn; i++)
         {
-            int index = Random.Range(0, transforms.Count - 1);
-            GameObject enemyInstance = Instantiate(enemyPrefab, transforms[index].position, transforms[index].rotation);
+            int spawnIndex = Random.Range(0, transforms.Count);
+            int typeIndex = Random.Range(0, enemyPrefabs.Count);
+            GameObject enemyInstance = Instantiate(enemyPrefabs[typeIndex], transforms[spawnIndex].position, transforms[spawnIndex].rotation);
 
             EnemyPerception enemyPerception = enemyInstance.GetComponentInChildren<EnemyPerception>();
             if (enemyPerception != null)
