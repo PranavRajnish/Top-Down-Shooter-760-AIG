@@ -41,6 +41,12 @@ namespace AI.StateMachine
             _isTransitioningState = false;
         }
 
+        private void FixedUpdate()
+        {
+            if (!_isTransitioningState)
+                CurrentState.FixedUpdateState();
+        }
+
         protected void OnTriggerEnter2D(Collider2D collision)
         {
             CurrentState.OnTriggerEnter(collision);

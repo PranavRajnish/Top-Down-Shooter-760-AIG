@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-using Unity.VisualScripting;
+using Random = UnityEngine.Random;
 
 public class EnemyPathfinding : MonoBehaviour
 {
@@ -12,13 +12,15 @@ public class EnemyPathfinding : MonoBehaviour
     [SerializeField] private Transform EnemySprite;
     [SerializeField] private Vector3 TargetPosition;
 
-    [Header("Cover finding properties")]
-    [SerializeField] private float maxPerpendicularDistance = 6f;
+    [Header("Cover finding properties")] [SerializeField]
+    private float maxPerpendicularDistance = 6f;
+
     [SerializeField] private float coverRayIncrement = 2f;
     [SerializeField] private float maximumDistanceToCover = 10f;
     [SerializeField] private LayerMask obstacleMask;
 
     public delegate void DHidingAttemptFinished();
+
     public DHidingAttemptFinished hidingAttemptFinished;
 
     private bool bIsTryingToHide = false;
@@ -29,6 +31,7 @@ public class EnemyPathfinding : MonoBehaviour
     bool bIsPathfinding = false;
 
     public delegate void DReachedEndOfPath();
+
     public DReachedEndOfPath reachedEndOfPath;
 
 
@@ -40,18 +43,20 @@ public class EnemyPathfinding : MonoBehaviour
         {
             if (!_seeker)
                 _seeker = GetComponent<Seeker>();
-            
+
             return _seeker;
         }
     }
 
 
-    private Rigidbody2D rb;
+    private Rigidbody2D _rigidbody;
+
+    private Coroutine _strafingCoroutine;
 
     // Start is called before the first frame update
     void Start()
     {
-        //rb = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -63,6 +68,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (currentWaypoint >= path.vectorPath.Count)
         {
             ReachedEndOfPath = true;
+            _rigidbody.velocity = Vector2.zero;
             reachedEndOfPath?.Invoke();
 
             if (bIsTryingToHide)
@@ -73,27 +79,20 @@ public class EnemyPathfinding : MonoBehaviour
 
             return;
         }
-        else
-        {
-            ReachedEndOfPath = false;
-        }
 
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - (Vector2)transform.position).normalized;
-        Vector2 velocity = direction.normalized * (speed * Time.deltaTime);
+        ReachedEndOfPath = false;
 
-        FaceTarget(velocity);
-        //FaceTarget((Vector3)target - transform.position);
+        var nextWaypointPos = (Vector2)path.vectorPath[currentWaypoint];
+        var currentPos = (Vector2)transform.position;
 
-        float distance = Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]);
-        if (distance < nextWaypointDistance)
-        {
+        var direction = (nextWaypointPos - currentPos).normalized;
+
+        FaceTarget(direction);
+
+        if (Vector2.Distance(nextWaypointPos, currentPos) < 0.25f)
             currentWaypoint++;
-        }
 
-        //rb.AddForce(velocity); 
-        float newX = transform.position.x + velocity.x * Time.deltaTime;
-        float newY = transform.position.y + velocity.y * Time.deltaTime;
-        transform.position = new Vector2(newX, newY);
+        _rigidbody.velocity = speed * direction;
     }
 
     public void FindCover(Transform coverTarget)
@@ -143,7 +142,7 @@ public class EnemyPathfinding : MonoBehaviour
 
 
         Vector3 dir = coverTarget.position - transform.position;
-        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0,0,1));
+        Vector3 perpendicular = Vector3.Cross(dir, new Vector3(0, 0, 1));
         perpendicular.Normalize();
 
         float minDistance = Mathf.Infinity;
@@ -151,8 +150,7 @@ public class EnemyPathfinding : MonoBehaviour
         bool bFoundValidCoverSpot = false;
         for (float d = -maxPerpendicularDistance; d <= maxPerpendicularDistance; d += coverRayIncrement)
         {
-            
-            Vector2 rayStart = (Vector2) transform.position + (d * (Vector2)perpendicular);
+            Vector2 rayStart = (Vector2)transform.position + (d * (Vector2)perpendicular);
 
             Collider2D collider = Physics2D.OverlapCircle(rayStart, 0.5f, obstacleMask.value);
             if (collider != null)
@@ -185,7 +183,6 @@ public class EnemyPathfinding : MonoBehaviour
             Debug.Log("No hiding spot found");
             hidingAttemptFinished?.Invoke();
         }
-
     }
 
     public void CalculateNewPath(Vector2 targetPoint)
@@ -222,13 +219,18 @@ public class EnemyPathfinding : MonoBehaviour
         }
     }
 
-    private void FaceTarget(Vector3 velocity)
+    private void FaceTarget(Vector3 direction)
     {
-        if (velocity.magnitude > 0)
+        if (direction.magnitude > 0)
         {
-            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
+    }
+
+    private void FaceTarget(Transform target)
+    {
+        transform.LookAt(target);
     }
 
     private void OnDrawGizmos()
@@ -241,13 +243,62 @@ public class EnemyPathfinding : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(target, 0.1f);
 
-        if(path != null)
+        if (path != null)
         {
             Gizmos.color = Color.yellow;
-            foreach(Vector3 v3 in path.vectorPath)
+            foreach (Vector3 v3 in path.vectorPath)
             {
                 Gizmos.DrawSphere(v3, 0.05f);
             }
         }
+
+        if (IsStrafing)
+        {
+            var position = transform.position;
+            var a = (Vector2)position + _strafePlane * 3;
+            var b = (Vector2)position + _strafePlane * -3;
+
+            Gizmos.color = Color.black;
+            Gizmos.DrawLine(a, b);
+        }
+    }
+
+    public bool IsStrafing => _strafingCoroutine != null;
+    [SerializeField] private float stationaryTolerance = 0.005f;
+
+    private Vector2 _strafePlane;
+
+    public void Strafe(Vector2 destination)
+    {
+        StopStrafing();
+        _strafingCoroutine = StartCoroutine(StrafeRoutine(destination));
+    }
+
+    public void StopStrafing()
+    {
+        if (!IsStrafing) return;
+
+        StopCoroutine(_strafingCoroutine);
+        _strafingCoroutine = null;
+    }
+
+    private IEnumerator StrafeRoutine(Vector2 plane)
+    {
+        StopCalculatingPath();
+        Debug.Log("I'm strafing!!!!");
+        var startTime = DateTime.Now;
+        var randomTime = Random.Range(0f, 1.5f);
+        _strafePlane = plane;
+        plane.Normalize();
+        if (Random.Range(0, 1) == 0)
+            plane = -plane;
+
+        do
+        {
+            _rigidbody.velocity = plane * (speed * 0.75f);
+            yield return null;
+        } while ((DateTime.Now - startTime).Seconds > randomTime || _rigidbody.velocity.sqrMagnitude < stationaryTolerance);
+
+        _strafingCoroutine = null;
     }
 }
