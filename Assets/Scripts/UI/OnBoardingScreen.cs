@@ -15,7 +15,7 @@ namespace UI
             StartCoroutine(DisableScreen());
         }
 
-        public IEnumerator DisableScreen()
+        private IEnumerator DisableScreen()
         {
             while (true)
             {
