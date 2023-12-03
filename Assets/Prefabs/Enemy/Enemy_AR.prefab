@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
-  speed: 75
+  speed: 4
   nextWaypointDistance: 0.02
   EnemySprite: {fileID: 8507243001878668077}
   TargetPosition: {x: 0, y: 0, z: 0}
