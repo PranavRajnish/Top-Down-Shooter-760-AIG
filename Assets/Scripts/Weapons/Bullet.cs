@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Weapons
 {
-    [RequireComponent(typeof(BoxCollider2D))]
+    [RequireComponent(typeof(BoxCollider2D), typeof(Rigidbody2D))]
     public class Bullet : MonoBehaviour
     {
         public float Damage => _damage;
@@ -16,6 +16,12 @@ namespace Weapons
         private float _damage = 10;
 
         private DateTime _startTime;
+        private Rigidbody2D _rigidbody;
+
+        private void Awake()
+        {
+            _rigidbody = GetComponent<Rigidbody2D>();
+        }
 
         public Bullet Init(Gun parentGun)
         {
@@ -43,7 +49,7 @@ namespace Weapons
             if ((DateTime.Now - _startTime).Seconds > 2f)
                 gameObject.SetActive(false);
 
-            transform.position += (Vector3)_currentDirection * (Time.deltaTime * bulletSpeed);
+            _rigidbody.velocity = _currentDirection * bulletSpeed;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

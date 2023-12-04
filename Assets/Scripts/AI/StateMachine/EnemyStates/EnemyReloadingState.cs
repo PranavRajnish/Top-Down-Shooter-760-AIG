@@ -16,13 +16,12 @@ namespace AI.StateMachine.EnemyStates
         }
 
         private bool _hideBeforeReload;
-        private bool _reloadAttempted;
 
         public override void EnterState()
         {
             _hideBeforeReload = false;
-            _reloadAttempted = false;
-            if (CurrentGun is ARGun)
+            var reloadAttempted = false;
+            if (CurrentGun is ARGun or Pistol)
             {
                 // If health is low hide before reloading, otherwise reload without hiding.
             
@@ -35,7 +34,7 @@ namespace AI.StateMachine.EnemyStates
                 {
                     Debug.Log("AR Gun high health");
                     CurrentGun.OnReloadPressed();
-                    _reloadAttempted = true;
+                    reloadAttempted = true;
                 }
             }
             else
@@ -47,7 +46,7 @@ namespace AI.StateMachine.EnemyStates
             if(stateManager.previousState == EnemyStateManager.EnemyState.Hiding)
             {
                 _hideBeforeReload = false;
-                if (!_reloadAttempted)
+                if (!reloadAttempted)
                     CurrentGun.OnReloadPressed();
             }
 
@@ -56,11 +55,9 @@ namespace AI.StateMachine.EnemyStates
         public override EnemyStateManager.EnemyState GetNextState()
         {
             if(_hideBeforeReload)
-            {
                 return EnemyStateManager.EnemyState.Hiding;
-            }
 
-            if (CurrentGun.BulletsRemaining <= 0)
+            if (CurrentGun.IsReloading)
                 return StateKey;
 
             if (Perception.CanSeePlayer)

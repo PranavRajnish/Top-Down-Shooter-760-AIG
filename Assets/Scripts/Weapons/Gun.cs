@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Player;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,12 +8,13 @@ namespace Weapons
 {
     public abstract class Gun : MonoBehaviour
     {
-        public PlayerWeaponControl WeaponWielder { get; private set; }
         public abstract GunType Type { get; }
         public abstract FireMode[] FireModes { get; }
         public FireMode CurrentFireMode { get; protected set; }
         public float BulletDamage => bulletDamage;
         public Transform Muzzle => muzzle;
+        public bool IsShooting => _shootingCoroutine != null;
+        public bool IsReloading => _reloadCoroutine != null;
         public int BulletsRemaining { get; private set; }
         public float NormalizedBulletsRemaining => (float)BulletsRemaining / magSize;
 
@@ -38,10 +38,10 @@ namespace Weapons
 
         public void OnTriggerPulled()
         {
-            if (_triggerPulled)
+            if (_triggerPulled || IsReloading)
                 return;
 
-            if (_shootingCoroutine != null)
+            if (IsShooting)
                 StopCoroutine(_shootingCoroutine);
 
             _triggerPulled = true;
@@ -56,9 +56,7 @@ namespace Weapons
                 return;
 
             if (_poolOfBullets.Count <= magSize && _poolOfBullets.All(bullet => bullet.gameObject.activeSelf))
-            {
                 _poolOfBullets.Add(Instantiate(bulletPrefab, muzzle.position, quaternion.identity).Init(this));
-            }
 
             foreach (var bullet in _poolOfBullets.Where(bullet => !bullet.gameObject.activeSelf))
             {
@@ -70,7 +68,7 @@ namespace Weapons
 
         public void OnTriggerReleased()
         {
-            if (_shootingCoroutine != null)
+            if (IsShooting)
                 StopCoroutine(_shootingCoroutine);
 
             _triggerPulled = false;
@@ -78,8 +76,17 @@ namespace Weapons
 
         public void OnReloadPressed()
         {
-            if (_reloadCoroutine == null && BulletsRemaining < magSize)
+            if (IsShooting)
+                OnTriggerReleased();
+
+            if (!IsReloading && BulletsRemaining < magSize)
                 _reloadCoroutine = StartCoroutine(Reload());
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var bullet in _poolOfBullets)
+                DestroyImmediate(bullet);
         }
 
         private IEnumerator Reload()

@@ -22,7 +22,7 @@ namespace Player
 
         public event Action OnCharacterStatUpdate;
 
-        public bool IsPlayer { get { return isPlayer; } }
+        public bool IsPlayer => isPlayer;
 
         public void OnDamageDealt(Bullet bullet)
         {

@@ -98,6 +98,6 @@ public class EnemyStateManager : StateManager<EnemyStateManager.EnemyState>
 
     public string GetCurrentState()
     {
-        return CurrentState.ToString();
+        return CurrentState.StateKey.ToString();
     }
 }

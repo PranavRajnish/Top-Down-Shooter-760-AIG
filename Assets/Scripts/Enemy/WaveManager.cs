@@ -25,7 +25,7 @@ public class WaveManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Invoke("GenerateWave", 10);
+        GenerateWave();
     }
 
     private void GenerateWave()
@@ -66,7 +66,7 @@ public class WaveManager : MonoBehaviour
         if (enemiesLeft <= 0)
         {
             currentWave += 1;
-            Invoke("GenerateWave", 10);
+            Invoke("GenerateWave", 5);
         }
     }
 }
