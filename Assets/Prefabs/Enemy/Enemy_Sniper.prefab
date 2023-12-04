@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
-  speed: 4
+  speed: 3
   nextWaypointDistance: 1
   EnemySprite: {fileID: 8507243001878668077}
   TargetPosition: {x: 0, y: 0, z: 0}
@@ -550,9 +550,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cff3ad3eeafdd54e8c232235ee3102f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   isPlayer: 0
   health: 50
-  armor: 25
+  armor: 0
 --- !u!1001 &7422968389760639540
 PrefabInstance:
   m_ObjectHideFlags: 0
