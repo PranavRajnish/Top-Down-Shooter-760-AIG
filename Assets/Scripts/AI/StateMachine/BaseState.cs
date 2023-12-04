@@ -1,23 +1,45 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseState<EState> where EState : Enum
+namespace AI.StateMachine
 {
-    public EState stateKey { get; private set; }
-
-    public BaseState(EState key)
+    public abstract class BaseState<TState> where TState : Enum
     {
-        stateKey = key;
-    }
-    
-    public abstract void EnterState();
-    public abstract void ExitState();
-    public abstract void UpdateState();
-    public abstract EState GetNextState();
-    public abstract void OnTriggerEnter(Collider2D other);
-    public abstract void OnTriggerStay(Collider2D other);
-    public abstract void OnTriggerExit(Collider2D other);
+        public TState StateKey { get; private set; }
 
+        protected BaseState(TState key)
+        {
+            StateKey = key;
+        }
+
+        public virtual void EnterState()
+        {
+        }
+
+        public virtual void ExitState()
+        {
+        }
+
+        public virtual void UpdateState()
+        {
+        }
+
+        public virtual void FixedUpdateState()
+        {
+        }
+
+        public abstract TState GetNextState();
+
+        public virtual void OnTriggerEnter(Collider2D other)
+        {
+        }
+
+        public virtual void OnTriggerStay(Collider2D other)
+        {
+        }
+
+        public virtual void OnTriggerExit(Collider2D other)
+        {
+        }
+    }
 }

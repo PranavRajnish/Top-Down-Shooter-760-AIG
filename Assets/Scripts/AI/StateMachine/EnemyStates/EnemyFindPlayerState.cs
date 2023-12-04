@@ -1,9 +1,12 @@
+using AI.StateMachine.EnemyStates;
 using UnityEngine;
 
 public class EnemyFindPlayerState : EnemyBaseState
 {
     private PolygonCollider2D baseCollider => stateManager.BaseCollider;
     private Vector2 _currentTarget;
+    private double _startTime;
+    private bool _hadSeenPlayer;
     
     public EnemyFindPlayerState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager)
     {
@@ -12,17 +15,19 @@ public class EnemyFindPlayerState : EnemyBaseState
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("Entered Capturing State");
+        Debug.Log("Entered Find Player State");
 
         stateManager.gotHit = false;
 
         _currentTarget = Perception.player.transform.position;
         Pathfinding.CalculateNewPath(_currentTarget);
-        
+        _startTime = Time.time;
     }
 
     public override void ExitState()
     {
+        base.ExitState();
+
         Pathfinding.StopCalculatingPath();
     }
 
@@ -30,20 +35,11 @@ public class EnemyFindPlayerState : EnemyBaseState
     {
         if (Perception.CanSeePlayer)
             return EnemyStateManager.EnemyState.Shooting;
+        
+        if (Time.time - _startTime > 5)
+            return EnemyStateManager.EnemyState.Capturing;
 
-        return stateKey;
-    }
-
-    public override void OnTriggerEnter(Collider2D other)
-    {
-    }
-
-    public override void OnTriggerExit(Collider2D other)
-    {
-    }
-
-    public override void OnTriggerStay(Collider2D other)
-    {
+        return StateKey;
     }
 
     public override void UpdateState()
@@ -53,6 +49,5 @@ public class EnemyFindPlayerState : EnemyBaseState
             _currentTarget = Perception.player.transform.position;
             Pathfinding.CalculateNewPath(_currentTarget);
         }
-            
     }
 }

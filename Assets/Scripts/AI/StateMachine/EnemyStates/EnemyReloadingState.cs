@@ -1,45 +1,72 @@
-using System.Collections;
-using System.Collections.Generic;
+using Player;
 using UnityEngine;
 using Weapons;
 
-public class EnemyReloadingState : EnemyBaseState
+namespace AI.StateMachine.EnemyStates
 {
-    private Gun _currentGun;
-    public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) { }
-
-    public override void EnterState()
+    public class EnemyReloadingState : EnemyBaseState
     {
-        _currentGun = stateManager.gameObject.GetComponent<Enemy>().currentGun;
-        _currentGun.OnReloadPressed();
+        private Gun _currentGun;
+        private readonly CharacterDefenseStats _defenseStats;
+        private Gun CurrentGun => Enemy.CurrentGun;
 
-    }
+        public EnemyReloadingState(EnemyStateManager.EnemyState state, EnemyStateManager enemyStateManager) : base(state, enemyStateManager) 
+        {
+            _defenseStats = stateManager.gameObject.GetComponent<CharacterDefenseStats>();
+        }
 
-    public override void ExitState()
-    {
+        private bool _hideBeforeReload;
+        private bool _reloadAttempted;
 
-    }
+        public override void EnterState()
+        {
+            _hideBeforeReload = false;
+            _reloadAttempted = false;
+            if (CurrentGun is ARGun)
+            {
+                // If health is low hide before reloading, otherwise reload without hiding.
+            
+                if(_defenseStats.NormalizedHealth <= 0.4f)
+                {
+                    Debug.Log("AR Gun low health");
+                    _hideBeforeReload = true;
+                }
+                else
+                {
+                    Debug.Log("AR Gun high health");
+                    CurrentGun.OnReloadPressed();
+                    _reloadAttempted = true;
+                }
+            }
+            else
+            {
+                _hideBeforeReload = true;
+            }
 
-    public override EnemyStateManager.EnemyState GetNextState()
-    {
-        if (_currentGun.BulletsRemaining <= 0)
-            return stateKey;
+            // Checking to see if enemy has already attempted to hide.
+            if(stateManager.previousState == EnemyStateManager.EnemyState.Hiding)
+            {
+                _hideBeforeReload = false;
+                if (!_reloadAttempted)
+                    CurrentGun.OnReloadPressed();
+            }
 
-        if (Perception.CanSeePlayer)
-            return EnemyStateManager.EnemyState.Shooting;
+        }
 
-        return EnemyStateManager.EnemyState.FindPlayer;
-    }
+        public override EnemyStateManager.EnemyState GetNextState()
+        {
+            if(_hideBeforeReload)
+            {
+                return EnemyStateManager.EnemyState.Hiding;
+            }
 
-    public override void OnTriggerEnter(Collider2D other)
-    {
-    }
+            if (CurrentGun.BulletsRemaining <= 0)
+                return StateKey;
 
-    public override void OnTriggerExit(Collider2D other)
-    {
-    }
+            if (Perception.CanSeePlayer)
+                return EnemyStateManager.EnemyState.Shooting;
 
-    public override void OnTriggerStay(Collider2D other)
-    {
+            return EnemyStateManager.EnemyState.FindPlayer;
+        }
     }
 }

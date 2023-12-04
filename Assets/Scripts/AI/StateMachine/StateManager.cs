@@ -1,58 +1,67 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class StateManager<EState> : MonoBehaviour where EState : Enum
+namespace AI.StateMachine
 {
-    
-    protected Dictionary<EState, BaseState<EState>> states = new Dictionary<EState, BaseState<EState>>();
-    protected BaseState<EState> currentState;
-
-    protected bool isTransitioningState = false;
-    void Start()
+    public abstract class StateManager<TState> : MonoBehaviour where TState : Enum
     {
-        currentState.EnterState();
-    }
+        protected readonly Dictionary<TState, BaseState<TState>> States = new();
+        protected BaseState<TState> CurrentState;
+        [SerializeField] private TState currentStateKey;
 
-    void Update()
-    {
-        
-        EState nextStateKey = currentState.GetNextState();
-        if(!isTransitioningState && nextStateKey.Equals(currentState.stateKey))
+        private bool _isTransitioningState;
+
+        private void Start()
         {
-            currentState.UpdateState();
-        }
-        else if (!isTransitioningState)
-        {
-            TransitionToState(nextStateKey);
+            CurrentState.EnterState();
         }
 
-        currentState.UpdateState();
-        
-    }
+        private void Update()
+        {
+            var nextStateKey = CurrentState.GetNextState();
+            switch (_isTransitioningState)
+            {
+                case false when nextStateKey.Equals(CurrentState.StateKey):
+                    CurrentState.UpdateState();
+                    break;
+                case false:
+                    TransitionToState(nextStateKey);
+                    break;
+            }
 
-    protected void TransitionToState(EState nextStateKey)
-    {
-        isTransitioningState = true;
-        currentState.ExitState();
-        currentState = states[nextStateKey];
-        currentState.EnterState();
-        isTransitioningState = false;
-    }
+            CurrentState.UpdateState();
+        }
 
-    protected void OnTriggerEnter2D(Collider2D collision)
-    {
-        currentState.OnTriggerEnter(collision);
-    }
+        private void TransitionToState(TState nextStateKey)
+        {
+            _isTransitioningState = true;
+            CurrentState.ExitState();
+            CurrentState = States[nextStateKey];
+            currentStateKey = nextStateKey;
+            CurrentState.EnterState();
+            _isTransitioningState = false;
+        }
 
-    protected void OnTriggerStay2D(Collider2D collision)
-    {
-        currentState.OnTriggerStay(collision);
-    }
+        private void FixedUpdate()
+        {
+            if (!_isTransitioningState)
+                CurrentState.FixedUpdateState();
+        }
 
-    protected void OnTrigerExit(Collider2D collision) 
-    {
-        currentState.OnTriggerExit(collision);
+        protected void OnTriggerEnter2D(Collider2D collision)
+        {
+            CurrentState.OnTriggerEnter(collision);
+        }
+
+        protected void OnTriggerStay2D(Collider2D collision)
+        {
+            CurrentState.OnTriggerStay(collision);
+        }
+
+        protected void OnTriggerExit2D(Collider2D collision)
+        {
+            CurrentState.OnTriggerExit(collision);
+        }
     }
 }

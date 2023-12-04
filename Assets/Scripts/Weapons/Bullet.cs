@@ -9,6 +9,7 @@ namespace Weapons
     {
         public float Damage => _damage;
         [SerializeField] private float bulletSpeed = 5f;
+        [SerializeField] private int obstacleLayerInt;
 
         private Transform _muzzle;
         private Vector2 _currentDirection;
@@ -62,6 +63,18 @@ namespace Weapons
             // {
             //     // Show bullet marks.
             // }
+            if (other.gameObject.layer == obstacleLayerInt)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            if (collision.gameObject.layer == obstacleLayerInt)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }
