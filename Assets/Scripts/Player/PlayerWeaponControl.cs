@@ -100,6 +100,9 @@ namespace Player
 
         private void OnPlayerGunChange(InputAction.CallbackContext value)
         {
+            if(CurrentGun.IsReloading)
+                return;
+            
             var readValue = (int)value.ReadValue<float>() / 120;
             Debug.Log($"Start : {readValue}");
 
