@@ -100,9 +100,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 2193008268233239749, guid: 0f58332261f4cc44294ee66669ca0d1f, type: 3}
   muzzle: {fileID: 9108977584653528981}
-  magSize: 10
+  magSize: 1
   reloadTime: 4
-  bulletDamage: 20
+  bulletDamage: 40
 --- !u!1 &8195062002509942875
 GameObject:
   m_ObjectHideFlags: 0

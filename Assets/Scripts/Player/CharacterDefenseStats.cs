@@ -1,3 +1,4 @@
+using Core;
 using System;
 using UnityEngine;
 using Weapons;
@@ -6,12 +7,14 @@ namespace Player
 {
     public class CharacterDefenseStats : PlayerComponent
     {
+        [SerializeField]
+        private GameManager gameManager;
         [SerializeField] private bool isPlayer;
         [SerializeField] private float health = 100f;
         [SerializeField] private float armor = 50f;
 
         private const float MaxPlayerHealth = 100f;
-        private const float MaxPlayerArmor = 50f;
+        private const float MaxPlayerArmor = 100f;
 
         public float NormalizedHealth => (health + armor) / MaxPlayerHealth;
 
@@ -48,17 +51,22 @@ namespace Player
             
             OnCharacterHit?.Invoke();
             OnCharacterStatUpdate?.Invoke();
+
+            if(isPlayer && health <=0 && armor <=0)
+            {
+                gameManager.OnGameEnd();
+            }
         }
 
         public void AddHealth(float amt)
         {
-            health += amt;
+            health = Mathf.Clamp(health + amt, 0, MaxPlayerHealth);
             OnCharacterStatUpdate?.Invoke();
         }
 
         public void AddArmor(float amt)
         {
-            armor += amt;
+            armor = Mathf.Clamp(armor + amt, 0, MaxPlayerArmor);
             OnCharacterStatUpdate?.Invoke();
         }
     }

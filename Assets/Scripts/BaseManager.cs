@@ -1,3 +1,4 @@
+using Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 
 public class BaseManager : MonoBehaviour
 {
+    [SerializeField]
+    private GameManager gameManager;
     [SerializeField]
     private Slider slider;
     [SerializeField]
@@ -41,6 +44,11 @@ public class BaseManager : MonoBehaviour
 
     private void Update()
     {
+        if(slider.value == slider.maxValue)
+        {
+            gameManager.OnGameEnd();
+        }
+
         if(numberOfEnemiesCapturing > 0 && slider.value < slider.maxValue)
         {
             slider.value += baseCaptureRate * Time.deltaTime * Mathf.Clamp(numberOfEnemiesCapturing, numberOfEnemiesCapturing, maxEnemyMultiplierLimit);
